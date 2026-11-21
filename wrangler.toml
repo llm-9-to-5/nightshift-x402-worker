@@ -9,7 +9,7 @@ binding = "STATS"
 id = "30d4ebd356034d0e9b80859e294262be"
 
 [triggers]
-crons = ["17 6 * * *"]
+crons = ["17 6 * * *", "*/10 * * * *"]
 
 [vars]
 AWSMP_SERVICE_URL = "https://nightshift-agent.solaris-organization.workers.dev"
