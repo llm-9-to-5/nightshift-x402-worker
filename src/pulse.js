@@ -5,7 +5,7 @@ const RPC = "https://base-rpc.publicnode.com";
 const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 const AU = "0x98de503528ee59b575ef0c0a2576a82497bfc029a5685b209e9ec333479b10a5";
 const TR = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
-const MAX_BLOCKS = 3600; // per run (~12 min of Base blocks at 0.2s/block); cron runs every 10 min
+const MAX_BLOCKS = 5400; // per run (18 min of Base blocks at 0.2s), so a 10-min cron catches up after outages. KV free tier = 1000 writes/day: each tick costs 2-3 writes. Subrequests: ~6 chunks x (1 + authorizers/80) + retries; free plan caps at 50.
 
 const RPCS = ["https://gateway.tenderly.co/public/base", "https://base.gateway.tenderly.co", RPC];
 // Timestamps: read the real timestamps of the first and last block of each range and interpolate.
@@ -30,7 +30,7 @@ export async function pulseTick(env) {
   const tip = parseInt(await rpc("eth_blockNumber", []), 16) - 5;
   const last = parseInt((await env.STATS.get("pulse:last")) || "0", 10);
   const from = last ? last + 1 : tip - 300;
-  if (from > tip) return { skipped: true };
+  if (from > tip - 300) return { skipped: true }; // wait for at least 300 new blocks (1 min): saves KV writes
   const to = Math.min(tip, from + MAX_BLOCKS - 1);
   const [fromTs, toTs] = await Promise.all([blockTs(from), blockTs(to)]);
   const tsOf = (b) => (to === from ? toTs : Math.round(fromTs + ((b - from) * (toTs - fromTs)) / (to - from)));
