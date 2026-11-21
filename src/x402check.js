@@ -68,6 +68,10 @@ export async function x402Check({ url, method = "GET", body }) {
   try {
     r = await fetch(u.href, { method, redirect: "manual", headers: { "user-agent": "NightshiftX402Check/0.1 (+https://nightshift-agent.solaris-organization.workers.dev)", accept: "application/json", ...(method !== "GET" ? { "content-type": "application/json" } : {}) }, body: method !== "GET" ? (typeof body === "string" ? body : JSON.stringify(body ?? {})) : undefined });
     text = (await r.text()).slice(0, 200000);
+    if (method === "GET" && (r.status === 405 || r.status === 404 || r.status === 400) && !r.headers.get("payment-required")) {
+      const r2 = await fetch(u.href, { method: "POST", redirect: "manual", headers: { "user-agent": "NightshiftX402Check/0.1 (+https://nightshift-agent.solaris-organization.workers.dev)", accept: "application/json", "content-type": "application/json" }, body: typeof body === "string" ? body : JSON.stringify(body ?? {}) });
+      if (r2.status === 402) { warnings.push(`GET returned ${r.status}; endpoint answers 402 to POST, so call it with POST`); r = r2; method = "POST"; text = (await r2.text()).slice(0, 200000); }
+    }
   } catch (e) {
     return { url: u.href, reachable: false, verdict: "do_not_pay", problems: [`unreachable: ${e.message || e}`], directories: { nohumans: await dirNH, index402: await dir402 } };
   }
@@ -88,7 +92,8 @@ export async function x402Check({ url, method = "GET", body }) {
     const isUSDC = known && String(a.asset).toLowerCase() === known.toLowerCase();
     const o = { scheme: a.scheme, network, network_name: NET_NAME[network] || network, asset: a.asset, asset_is_usdc: !!isUSDC, amount_atomic: amountAtomic, price_usd: isUSDC && amountAtomic ? Number(amountAtomic) / 1e6 : null, pay_to: a.payTo, max_timeout_s: a.maxTimeoutSeconds ?? null, eip712_domain: a.extra?.name ? { name: a.extra.name, version: a.extra.version } : null, issues: [] };
     if (TESTNETS.has(network)) o.issues.push("testnet: payment has no real value, likely a demo");
-    if (!isUSDC) o.issues.push("asset is not the canonical USDC contract for this network");
+    if (known && !isUSDC) o.issues.push("asset is not the canonical USDC contract for this network");
+    if (!known) o.asset_note = "network not in our USDC table; asset not verified";
     if (network.startsWith("eip155:") && !/^0x[0-9a-fA-F]{40}$/.test(a.payTo || "")) o.issues.push("payTo is not a valid EVM address");
     if (network.startsWith("eip155:") && a.scheme === "exact" && !a.extra?.name) o.issues.push("missing EIP-712 domain (extra.name/version): standard clients may fail to sign");
     if (o.price_usd != null && o.price_usd > 1) o.issues.push(`high price: $${o.price_usd} per call`);
@@ -106,8 +111,7 @@ export async function x402Check({ url, method = "GET", body }) {
   if (nh?.payto_unstable) warnings.push("payTo address has changed between probes (nohumans)");
   if (nh?.pay_to && base && nh.pay_to.toLowerCase() !== String(base.pay_to).toLowerCase()) warnings.push("payTo differs from the address nohumans.directory recorded for this listing");
   if (nh?.price_usd != null && base?.price_usd != null && base.price_usd > nh.price_usd * 1.001) warnings.push(`price now ($${base.price_usd}) is higher than the directory-recorded price ($${nh.price_usd})`);
-  if (i4?.health_status && i4.health_status !== "healthy") warnings.push(`402index health: ${i4.health_status}`);
-  if (wallet?.is_contract) warnings.push("payTo on Base is a smart contract (fine for smart wallets/splitters, but verify)");
+  if (i4?.health_status && !["healthy", "unknown"].includes(i4.health_status)) warnings.push(`402index health: ${i4.health_status}`);
   if (!nh?.status && !i4?.listed) warnings.push("not found in nohumans.directory or 402index: no third-party track record");
   for (const o of options) for (const i of o.issues) (i.startsWith("testnet") || i.startsWith("payTo is not") ? problems : warnings).push(`${o.network_name}: ${i}`);
 
@@ -116,7 +120,7 @@ export async function x402Check({ url, method = "GET", body }) {
     url: u.href, method, reachable: true, http_status: r.status, latency_ms: latency, transport, x402_version: challenge?.x402Version ?? null,
     description: challenge?.resource?.description ?? challenge?.accepts?.[0]?.description ?? null,
     payment_options: options, cheapest_usd: options.reduce((m, o) => (o.price_usd != null && (m == null || o.price_usd < m) ? o.price_usd : m), null),
-    pay_to_wallet_base: wallet ? { address: base.pay_to, ...wallet } : null,
+    pay_to_wallet_base: wallet ? { address: base.pay_to, ...wallet, ...(wallet.is_contract ? { note: "contract address: usually a smart wallet or payment splitter" } : {}) } : null,
     directories: { nohumans: nh, index402: i4 },
     verdict, problems, warnings,
     sources: "Live unpaid probe by Nightshift; reputation from nohumans.directory and 402index.io public APIs; wallet data from Base RPC.",

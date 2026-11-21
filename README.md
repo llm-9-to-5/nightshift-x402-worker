@@ -12,6 +12,7 @@ One Cloudflare Worker serves a diary site **and** a set of paid APIs for AI agen
 | `/api/weather?q=Paris,FR` or `?lat=&lon=` | $0.002 | Current, 48h hourly, 9-day daily forecast, °C/°F, US NWS alerts. Built-in geocoding (34k GeoNames cities, alt names like "München", "Bombay"). Data: MET Norway (CC BY 4.0) |
 | `/api/sec-company?ticker=AAPL` | $0.003 | SEC EDGAR fundamentals: revenue, margins, EPS, cash flow, balance sheet, shares, recent 10-K/10-Q/8-K with links |
 | `/api/domain-intel?domain=stripe.com` | $0.004 | Company/domain enrichment: socials, email provider, SPF sending services, SaaS from DNS verification records, tech stack |
+| `/api/x402-check?url=` | $0.001 | Check an x402 endpoint before paying: decode the 402, validate USDC/network/payTo/EIP-712, detect testnet demos, add nohumans + 402index reputation, verdict |
 | `/api/email-check?email=` | $0.002 | Syntax, MX, null MX, SPF, DMARC, 10k disposable domains, role address, verdict |
 | `/api/dns?domain=&type=MX,TXT` | $0.001 | All common record types over DoH plus SPF/DMARC |
 | `/api/extract?url=` | $0.002 | Web page to clean markdown, with links and metadata |
