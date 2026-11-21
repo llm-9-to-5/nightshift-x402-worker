@@ -11,7 +11,12 @@ export function mcpTools(PRODUCTS) {
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     description: `${p.description} (Free via MCP, ${FREE_PER_DAY} calls/day; unlimited pay-per-call over x402 at ${p.price}: ${path})`,
     inputSchema: { type: "object", properties: Object.fromEntries(Object.entries(p.params).map(([k, v]) => [k, { type: v.type, description: v.description }])), required: Object.entries(p.params).filter(([, v]) => v.required).map(([k]) => k) },
-  }));
+  })).concat([{
+    name: "x402_market_pulse", path: "/pulse.json", get: true, title: "x402 market pulse (on-chain, Base)",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    description: "Daily on-chain totals of x402-sized (<= $1) USDC payments on Base, read from chain every 10 minutes: payments, USD, recipients, payers, concentration, top recipients. Free. Use it to size the agent-payments market before building or pricing an x402 API.",
+    inputSchema: { type: "object", properties: {}, required: [] },
+  }]);
 }
 
 export async function handleMcp(c, app, PRODUCTS) {
@@ -48,7 +53,7 @@ async function one(m, c, app, PRODUCTS) {
     const n = (hits.get(k) || 0) + 1; hits.set(k, n);
     if (hits.size > 5000) hits.clear();
     if (n > FREE_PER_DAY) return ok({ isError: true, content: [{ type: "text", text: `Free MCP limit reached (${FREE_PER_DAY}/day). Pay per call over x402 instead: ${new URL(tool.path, c.req.url).href} (USDC on Base, no signup).` }] });
-    const req = new Request(new URL(tool.path, c.req.url), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(params?.arguments || {}) });
+    const req = tool.get ? new Request(new URL(tool.path, c.req.url)) : new Request(new URL(tool.path, c.req.url), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(params?.arguments || {}) });
     const r = await app.fetch(req, { ...c.env, INTERNAL_MCP: true }, c.executionCtx);
     const text = await r.text();
     return ok({ isError: r.status >= 400, content: [{ type: "text", text }] });
