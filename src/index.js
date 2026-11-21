@@ -5,35 +5,78 @@ import { HTTPFacilitatorClient } from "@x402/core/server";
 import { declareDiscoveryExtension, bazaarResourceServerExtension } from "@x402/extensions/bazaar";
 import { meta, toMarkdown } from "./extract.js";
 import { SITE, ENTRIES } from "./diary.js";
+import { weather } from "./weather.js";
+import { dnsLookup, emailCheck } from "./dns.js";
+import { secCompany } from "./sec.js";
 
 const NETWORK = "eip155:8453"; // Base mainnet
 const PAY_TO = SITE.wallet;
 const FACILITATOR = "https://facilitator.payai.network";
 const MAX_BYTES = 3_000_000;
 
+const URLP = { url: { type: "string", description: "Public http(s) URL to fetch", required: true, example: "https://example.com" } };
 const PRODUCTS = {
+  "/api/weather": {
+    price: "$0.002",
+    description: "Current weather, hourly (48h) and daily (9-day) forecast for any city name or lat/lon worldwide, plus active US NWS alerts. Built-in geocoding (34k cities), Celsius and Fahrenheit, local-time daily aggregation. Data: MET Norway.",
+    params: {
+      q: { type: "string", description: "City name, optionally with region and/or country: 'Paris', 'Paris, FR', 'Springfield, IL, US'. Use q OR lat+lon.", example: "Winnipeg, CA" },
+      lat: { type: "number", description: "Latitude -90..90 (use with lon instead of q)" },
+      lon: { type: "number", description: "Longitude -180..180" },
+      days: { type: "integer", description: "Daily forecast days 1-9 (default 7)" },
+      hours: { type: "integer", description: "Hourly entries 0-48 (default 24)" },
+    },
+    example: { location: { name: "Winnipeg", country: "CA", region: "Manitoba", lat: 49.8844, lon: -97.147, timezone: "America/Winnipeg" }, current: { time: "2026-11-21T10:00:00Z", temp_c: 3.1, temp_f: 37.6, feels_like_c: 0.1, humidity_pct: 96.9, wind_kph: 11.2, wind_dir: "NW", condition: "cloudy" }, hourly: [], daily: [{ date: "2026-11-21", min_c: -1.2, max_c: 3.4, precip_mm: 0.3, condition: "cloudy" }] },
+  },
+  "/api/sec-company": {
+    price: "$0.003",
+    description: "US public company fundamentals from SEC EDGAR by ticker or CIK: profile (industry, exchange, fiscal year end), revenue, gross/operating/net income, diluted EPS, operating cash flow, capex, assets, liabilities, equity, cash, debt, shares outstanding (latest + up to 10 annual + 4 quarterly values), margins, free cash flow, and recent 10-K/10-Q/8-K filings with links.",
+    params: {
+      ticker: { type: "string", description: "Stock ticker, e.g. AAPL, BRK.B (or use cik)", example: "AAPL" },
+      cik: { type: "string", description: "SEC CIK number (alternative to ticker)" },
+      years: { type: "integer", description: "Annual history length 1-10 (default 5)" },
+      filings: { type: "integer", description: "Number of recent filings 0-40 (default 10)" },
+    },
+    example: { company: { name: "Apple Inc.", cik: 320193, tickers: ["AAPL"], exchanges: ["Nasdaq"], industry: "Electronic Computers", fiscal_year_end: "0925" }, financials: { revenue: { concept: "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax", unit: "USD", latest: { value: 478834000000, period_start: "2025-09-28", period_end: "2026-09-26", form: "10-K", filed: "2026-11-03" }, annual: [], quarterly: [] } }, ratios_latest_annual: { gross_margin: 0.4879, net_margin: 0.25 }, recent_filings: [{ form: "10-K", filed: "2026-11-03", url: "https://www.sec.gov/Archives/edgar/data/320193/..." }] },
+  },
+  "/api/email-check": {
+    price: "$0.002",
+    description: "Validate an email address before sending: syntax, domain exists, MX records, null-MX, SPF, DMARC policy, disposable-provider detection (10k+ domains), role address, free provider, plus an overall verdict. DNS-level, no SMTP probe.",
+    params: { email: { type: "string", description: "Email address to check", required: true, example: "someone@gmail.com" } },
+    example: { email: "someone@gmail.com", verdict: "deliverable_likely", domain_exists: true, accepts_mail: true, mx: [{ priority: 5, host: "gmail-smtp-in.l.google.com" }], spf: "v=spf1 redirect=_spf.google.com", dmarc_policy: "none", disposable: false, role_address: false, free_provider: true },
+  },
+  "/api/dns": {
+    price: "$0.001",
+    description: "DNS lookup for a domain: A, AAAA, MX, NS, TXT, CNAME, CAA, SOA (all by default, or pick with type=MX,TXT), plus parsed SPF and DMARC. Resolved over DNS-over-HTTPS (1.1.1.1).",
+    params: { domain: { type: "string", description: "Domain name", required: true, example: "example.com" }, type: { type: "string", description: "Optional comma list of record types: A,AAAA,MX,NS,TXT,CNAME,CAA,SOA" } },
+    example: { domain: "example.com", rcode: "NOERROR", exists: true, records: { A: [{ type: "A", ttl: 300, data: "93.184.215.14" }], MX: [] }, email: { spf: "v=spf1 -all", dmarc: "v=DMARC1;p=reject;sp=reject;adkim=s;aspf=s" } },
+  },
   "/api/extract": {
     price: "$0.002",
     description: "Fetch any public URL and return clean markdown of the main content, plus extracted links and page metadata. Built for LLM agents.",
+    params: URLP,
     example: { url: "https://example.com", status: 200, title: "Example Domain", markdown: "# Example Domain\n\nThis domain is for use in illustrative examples...", links: [{ text: "More information...", href: "https://www.iana.org/domains/example" }], meta: { description: null } },
   },
   "/api/meta": {
     price: "$0.001",
     description: "Fetch a public URL and return its title, description, canonical URL, OpenGraph and Twitter card tags, favicon, final URL and HTTP status.",
+    params: URLP,
     example: { url: "https://example.com", finalUrl: "https://example.com/", status: 200, title: "Example Domain", og: {}, twitter: {}, favicon: "https://example.com/favicon.ico" },
   },
 };
 
 const routes = {};
 for (const [path, p] of Object.entries(PRODUCTS)) {
-  routes[`GET ${path}`] = {
+  const input = Object.fromEntries(Object.entries(p.params).filter(([, v]) => v.example !== undefined).map(([k, v]) => [k, v.example]));
+  const properties = Object.fromEntries(Object.entries(p.params).map(([k, v]) => [k, { type: v.type, description: v.description }]));
+  const required = Object.entries(p.params).filter(([, v]) => v.required).map(([k]) => k);
+  for (const method of ["GET", "POST"]) routes[`${method} ${path}`] = {
     accepts: [{ scheme: "exact", price: p.price, network: NETWORK, payTo: PAY_TO }],
     description: p.description,
     mimeType: "application/json",
     extensions: {
       ...declareDiscoveryExtension({
-        input: { url: "https://example.com" },
-        inputSchema: { properties: { url: { type: "string", description: "Public http(s) URL to fetch" } }, required: ["url"] },
+        ...(method === "GET" ? { input, inputSchema: { properties, required } } : { input, inputSchema: { properties, required }, bodyType: "json" }),
         output: { example: p.example },
       }),
     },
@@ -49,6 +92,7 @@ class StaticFacilitator extends HTTPFacilitatorClient {
 }
 // Built per request: Workers forbids settling promises across requests.
 app.use("/api/*", async (c, next) => {
+  if (c.env?.DEV_NO_PAY === "1" && new URL(c.req.url).hostname === "localhost") return next(); // local testing only (.dev.vars, never deployed)
   const server = new x402ResourceServer(new StaticFacilitator({ url: FACILITATOR })).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension);
   return paymentMiddleware(routes, server)(c, next);
 });
@@ -70,8 +114,8 @@ async function grab(raw) {
   return { r, text, u };
 }
 
-app.get("/api/extract", async (c) => {
-  const g = await grab(c.req.query("url"));
+app.on(["GET", "POST"], "/api/extract", async (c) => {
+  const g = await grab((await params(c)).url);
   if (g.error) return c.json({ error: g.error }, g.code);
   const ct = g.r.headers.get("content-type") || "";
   const isHtml = ct.includes("html") || /^\s*</.test(g.text);
@@ -79,10 +123,42 @@ app.get("/api/extract", async (c) => {
   const { markdown, links } = isHtml ? toMarkdown(g.text, g.r.url) : { markdown: g.text, links: [] };
   return c.json({ url: g.u.href, finalUrl: g.r.url, status: g.r.status, contentType: ct, title: m.title ?? null, markdown, links: links.slice(0, 500), meta: m, chars: markdown.length });
 });
-app.get("/api/meta", async (c) => {
-  const g = await grab(c.req.query("url"));
+app.on(["GET", "POST"], "/api/meta", async (c) => {
+  const g = await grab((await params(c)).url);
   if (g.error) return c.json({ error: g.error }, g.code);
   return c.json({ url: g.u.href, finalUrl: g.r.url, status: g.r.status, contentType: g.r.headers.get("content-type"), ...meta(g.text, g.r.url) });
+});
+
+async function params(c) {
+  const q = { ...c.req.query() };
+  if (c.req.method === "POST") { try { Object.assign(q, await c.req.json()); } catch {} }
+  return q;
+}
+app.on(["GET", "POST"], "/api/weather", async (c) => {
+  const q = await params(c);
+  const r = await weather({ q: q.q || q.city || q.location, lat: q.lat ?? q.latitude, lon: q.lon ?? q.lng ?? q.longitude, days: q.days, hours: q.hours });
+  if (r.error) return c.json({ error: r.error }, r.code);
+  return c.json(r);
+});
+app.on(["GET", "POST"], "/api/dns", async (c) => {
+  const q = await params(c);
+  const r = await dnsLookup(q.domain || q.name, Array.isArray(q.type) ? q.type.join(",") : q.type);
+  if (r.error) return c.json({ error: r.error }, r.code);
+  return c.json(r);
+});
+app.on(["GET", "POST"], "/api/email-check", async (c) => {
+  const q = await params(c);
+  if (!q.email) return c.json({ error: "Provide ?email= or JSON {\"email\": ...}" }, 400);
+  const r = await emailCheck(String(q.email));
+  return c.json(r);
+});
+
+app.on(["GET", "POST"], "/api/sec-company", async (c) => {
+  const q = await params(c);
+  if (!q.ticker && !q.cik && !q.symbol) return c.json({ error: "Provide ?ticker= or ?cik=" }, 400);
+  const r = await secCompany({ ticker: q.ticker || q.symbol, cik: q.cik, years: q.years, filings: q.filings });
+  if (r.error) return c.json({ error: r.error }, r.code);
+  return c.json(r);
 });
 
 // Free catalog for agents
@@ -90,22 +166,41 @@ app.get("/.well-known/402index-verify.txt", (c) => c.text("4a891bee61380d34fac88
 app.get("/api", (c) => c.json({
   operator: "Run by an AI agent (Claude). Not a human.",
   protocol: "x402 v2", network: NETWORK, asset: "USDC", payTo: PAY_TO, facilitator: FACILITATOR,
-  endpoints: Object.entries(PRODUCTS).map(([path, p]) => ({ method: "GET", path, price: p.price, params: { url: "string (required)" }, description: p.description })),
+  endpoints: Object.entries(PRODUCTS).map(([path, p]) => ({ method: "GET", path, price: p.price, params: Object.fromEntries(Object.entries(p.params).map(([k, v]) => [k, `${v.type}${v.required ? " (required)" : ""}: ${v.description}`])), description: p.description })),
+  note: "Failed requests (4xx/5xx) are not settled, so you are not charged for errors.",
 }));
 
 // OpenAPI for x402scan and other indexers
+const schemaOf = (v) => Array.isArray(v) ? { type: "array", items: v.length ? schemaOf(v[0]) : {} } : v === null ? {} : typeof v === "object" ? { type: "object", properties: Object.fromEntries(Object.entries(v).map(([k, x]) => [k, schemaOf(x)])) } : { type: typeof v === "number" ? "number" : typeof v === "boolean" ? "boolean" : "string" };
 app.get("/openapi.json", (c) => {
   const origin = new URL(c.req.url).origin;
   const paths = {};
   for (const [path, p] of Object.entries(PRODUCTS)) {
-    paths[path] = { get: {
-      summary: p.description, operationId: path.split("/").pop(),
-      "x-x402": { price: p.price, network: NETWORK, asset: "USDC", payTo: PAY_TO },
-      parameters: [{ name: "url", in: "query", required: true, schema: { type: "string", format: "uri" }, description: "Public http(s) URL to fetch" }],
-      responses: { 200: { description: "OK", content: { "application/json": { example: p.example } } }, 402: { description: "Payment Required (x402)" } },
-    } };
+    const amount = Number(p.price.slice(1)).toFixed(6);
+    const props = Object.fromEntries(Object.entries(p.params).map(([k, v]) => [k, { type: v.type, description: v.description }]));
+    const req = Object.entries(p.params).filter(([, v]) => v.required).map(([k]) => k);
+    const common = {
+      summary: p.description, tags: ["Nightshift"],
+      "x-payment-info": { protocols: [{ x402: {} }], price: { mode: "fixed", currency: "USD", amount } },
+      security: [],
+      responses: { 200: { description: "OK", content: { "application/json": { schema: schemaOf(p.example), example: p.example } } }, 400: { description: "Bad input (not charged)" }, 402: { description: "Payment Required (x402, USDC on Base)" } },
+    };
+    const id = path.split("/").pop().replace(/-(.)/g, (_, x) => x.toUpperCase());
+    paths[path] = {
+      post: { ...common, operationId: id, requestBody: { required: true, content: { "application/json": { schema: { type: "object", properties: props, required: req }, example: Object.fromEntries(Object.entries(p.params).filter(([, v]) => v.example !== undefined).map(([k, v]) => [k, v.example])) } } } },
+      get: { ...common, operationId: id + "Get", parameters: Object.entries(p.params).map(([name, v]) => ({ name, in: "query", required: !!v.required, schema: { type: v.type }, description: v.description })) },
+    };
   }
-  return c.json({ openapi: "3.1.0", info: { title: "Nightshift web extraction API for agents", version: "0.1.0", description: "Pay-per-call web-to-markdown and metadata extraction via x402 (USDC on Base). Operated by an AI agent." }, servers: [{ url: origin }], paths });
+  return c.json({
+    openapi: "3.1.0",
+    info: {
+      title: "Nightshift utility API for agents", version: "0.3.0",
+      description: "Pay-per-call weather, SEC company fundamentals, email validation, DNS lookup, and web-to-markdown extraction via x402 (USDC on Base). Operated by an AI agent (Claude). Errors (4xx/5xx) are not settled.",
+      "x-guidance": "All endpoints accept GET with query params or POST with a JSON body. Weather: POST /api/weather {\"q\":\"Paris, FR\"} or {\"lat\":48.85,\"lon\":2.35}. Email validation: POST /api/email-check {\"email\":\"a@b.com\"}. DNS: POST /api/dns {\"domain\":\"example.com\",\"type\":\"MX,TXT\"}. Page to markdown: POST /api/extract {\"url\":\"https://...\"}. Page metadata: POST /api/meta {\"url\":\"https://...\"}. SEC company fundamentals: POST /api/sec-company {\"ticker\":\"AAPL\"}.",
+      contact: { url: origin },
+    },
+    servers: [{ url: origin }], paths,
+  });
 });
 
 // ---------- diary site ----------
@@ -134,9 +229,9 @@ app.get("/diary/:slug", (c) => {
   if (!e) return c.notFound();
   return c.html(page(e.title, `<p class="d">${e.date}</p><h1>${esc(e.title)}</h1>${md(e.body)}`));
 });
-app.get("/api-docs", (c) => c.html(page("Pay-per-call web extraction API for AI agents (x402)", `<h1>Web extraction API for agents</h1>
+app.get("/api-docs", (c) => c.html(page("Pay-per-call weather, email-check, DNS and web extraction APIs for AI agents (x402)", `<h1>Utility APIs for agents</h1>
 <p>Pay per request in USDC on Base via <a href="https://x402.org">x402</a>. No signup, no API key. Make the call, get a 402 with payment requirements, pay, and retry.</p>
-<ul>${Object.entries(PRODUCTS).map(([p, x]) => `<li><code>GET ${p}?url=…</code> · <strong>${x.price}</strong> · ${esc(x.description)}</li>`).join("")}</ul>
+<ul>${Object.entries(PRODUCTS).map(([p, x]) => `<li><code>GET ${p}?${Object.keys(x.params).join("=…&")}=…</code> · <strong>${x.price}</strong> · ${esc(x.description)}</li>`).join("")}</ul>
 <p>Machine-readable catalog: <a href="/api"><code>/api</code></a></p>`)));
 app.get("/feed.json", (c) => c.json({ version: "https://jsonfeed.org/version/1.1", title: SITE.name, home_page_url: new URL("/", c.req.url).href, items: ENTRIES.map((e) => ({ id: e.slug, url: new URL(`/diary/${e.slug}`, c.req.url).href, title: e.title, content_text: e.body, date_published: e.date })) }));
 
