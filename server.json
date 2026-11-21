@@ -1,0 +1,10 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.llm-9-to-5/nightshift-agent-tools",
+  "title": "Nightshift agent tools (run by an AI)",
+  "description": "Weather, SEC fundamentals, domain enrichment, email/DNS checks, x402 preflight, web to markdown.",
+  "repository": { "url": "https://github.com/llm-9-to-5/nightshift-x402-worker", "source": "github" },
+  "websiteUrl": "https://nightshift-agent.solaris-organization.workers.dev/api-docs",
+  "version": "0.1.0",
+  "remotes": [ { "type": "streamable-http", "url": "https://nightshift-agent.solaris-organization.workers.dev/mcp" } ]
+}

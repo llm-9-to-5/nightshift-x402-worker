@@ -10,6 +10,7 @@ import { dnsLookup, emailCheck } from "./dns.js";
 import { secCompany } from "./sec.js";
 import { domainIntel } from "./domainintel.js";
 import { x402Check } from "./x402check.js";
+import { handleMcp } from "./mcp.js";
 
 const NETWORK = "eip155:8453"; // Base mainnet
 const PAY_TO = SITE.wallet;
@@ -98,6 +99,28 @@ for (const [path, p] of Object.entries(PRODUCTS)) {
 }
 
 const app = new Hono();
+// Usage analytics: counts aggregated in isolate memory, flushed to KV at most every 5 min (KV free tier = 1000 writes/day).
+const STATS = { counts: {}, last: Date.now() };
+app.use("*", async (c, next) => {
+  await next();
+  try {
+    if (c.env?.INTERNAL_PREVIEW || c.env?.INTERNAL_MCP || !c.env?.STATS) return;
+    const u = new URL(c.req.url);
+    if (u.pathname === "/favicon.ico") return;
+    const paid = !!(c.req.header("payment-signature") || c.req.header("x-payment"));
+    let tool = "";
+    if (u.pathname === "/mcp" && c.req.method === "POST") { try { const b = await c.req.raw.clone().json(); tool = b?.method === "tools/call" ? `tool:${b.params?.name}` : String(b?.method || ""); } catch {} }
+    const path = u.pathname.startsWith("/diary/") || u.pathname.startsWith("/api/") || u.pathname.startsWith("/preview/") ? u.pathname.slice(0, 48) : ["/", "/api", "/mcp", "/openapi.json", "/api-docs", "/feed.json"].includes(u.pathname) ? u.pathname : "other";
+    const ua = /bot|crawl|spider|slurp|preview/i.test(c.req.header("user-agent") || "") ? "bot" : "client";
+    const k = [path, c.res.status, paid ? "paid" : "unpaid", tool, ua].join("|");
+    STATS.counts[k] = (STATS.counts[k] || 0) + 1;
+    const important = paid || tool.startsWith("tool:") || (path.startsWith("/api/") && c.res.status < 300);
+    if (important || Date.now() - STATS.last > 300000) {
+      const data = STATS.counts; STATS.counts = {}; STATS.last = Date.now();
+      c.executionCtx.waitUntil(c.env.STATS.put(`ev:${new Date().toISOString()}:${Math.random().toString(36).slice(2, 7)}`, JSON.stringify(data), { expirationTtl: 60 * 60 * 24 * 90 }));
+    }
+  } catch {}
+});
 // Static /supported answer (mirrors PayAI's live response) avoids a slow network call on every cold isolate.
 class StaticFacilitator extends HTTPFacilitatorClient {
   async getSupported() {
@@ -107,7 +130,7 @@ class StaticFacilitator extends HTTPFacilitatorClient {
 // Built per request: Workers forbids settling promises across requests.
 app.use("/api/*", async (c, next) => {
   if (c.env?.DEV_NO_PAY === "1" && new URL(c.req.url).hostname === "localhost") return next(); // local testing only (.dev.vars, never deployed)
-  if (c.env?.INTERNAL_PREVIEW === true) return next(); // free fixed-input previews, dispatched internally from /preview/*
+  if (c.env?.INTERNAL_PREVIEW === true || c.env?.INTERNAL_MCP === true) return next(); // free fixed-input previews, dispatched internally from /preview/*
   if (c.env?.OWNER_TEST_KEY && c.req.header("x-owner-test") === c.env.OWNER_TEST_KEY) return next(); // operator/agent smoke tests in production (secret)
   const server = new x402ResourceServer(new StaticFacilitator({ url: FACILITATOR })).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension);
   return paymentMiddleware(routes, server)(c, next);
@@ -202,6 +225,8 @@ app.get("/preview/:name", async (c) => {
   const body = await r.json();
   return c.json({ preview: true, note: `Free sample of ${path} on a fixed input. The paid endpoint (${p.price} USDC on Base via x402) takes any input.`, request: u.pathname + u.search, response: body }, r.status, { "cache-control": "public, max-age=900" });
 });
+
+app.on(["GET", "POST", "DELETE"], "/mcp", (c) => handleMcp(c, app, PRODUCTS));
 
 // Free catalog for agents
 app.get("/favicon.ico", (c) => c.body('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#13202b"/><circle cx="40" cy="24" r="12" fill="#f5d76e"/><circle cx="46" cy="20" r="11" fill="#13202b"/><text x="10" y="54" font-size="20" font-family="monospace" fill="#0b5">402</text></svg>', 200, { "content-type": "image/svg+xml", "cache-control": "public, max-age=86400" }));
