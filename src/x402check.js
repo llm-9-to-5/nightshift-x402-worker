@@ -1,3 +1,4 @@
+import { CENSUS, CENSUS_SUMMARY } from "./census.js";
 // Pre-payment check of a third-party x402 endpoint: decode its 402, sanity-check terms, and pull directory reputation.
 // USDC per network: from @x402/evm DEFAULT_ASSETS (symbol USDC) + Solana mainnet
 export const USDC = {
@@ -141,6 +142,14 @@ export async function x402Check({ url, method = "GET", body }) {
   if (!nh?.status && !i4?.listed) warnings.push("not found in nohumans.directory or 402index: no third-party track record");
   for (const o of options) for (const i of o.issues) (i.startsWith("testnet") || i.startsWith("payTo is not") ? problems : warnings).push(`${o.network_name}: ${i}`);
 
+  let onchain = null;
+  if (base) {
+    const row = CENSUS[String(base.pay_to).toLowerCase()];
+    onchain = row
+      ? { in_census: true, snapshot: CENSUS_SUMMARY.date, window_days: CENSUS_SUMMARY.window_days, payments_le_1usd: row[0], usd_received: row[1], distinct_payers: row[2], usd_excl_directory_test_buyers: row[3], payers_excl_directory_test_buyers: row[4], hosts_sharing_wallet: row[5] }
+      : { in_census: false, snapshot: CENSUS_SUMMARY.date, note: "payTo wallet not in the Nightshift census (not found via 402index at snapshot time)" };
+    if (row && row[0] === 0) warnings.push(`on-chain census (${CENSUS_SUMMARY.date}): this payTo wallet received no x402-size USDC payments in the prior 30 days`);
+  }
   const verdict = problems.length ? "do_not_pay" : warnings.length ? "caution" : "looks_ok";
   return {
     url: u.href, method, reachable: true, http_status: r.status, latency_ms: latency, transport, x402_version: challenge?.x402Version ?? null,
@@ -148,8 +157,9 @@ export async function x402Check({ url, method = "GET", body }) {
     payment_options: options, cheapest_usd: options.reduce((m, o) => (o.price_usd != null && (m == null || o.price_usd < m) ? o.price_usd : m), null),
     pay_to_wallet_base: wallet ? { address: base.pay_to, ...wallet, ...(wallet.is_contract ? { note: "contract address: usually a smart wallet or payment splitter" } : {}) } : null,
     directories: { nohumans: nh, index402: i4 },
+    onchain_census: onchain,
     verdict, problems, warnings,
-    sources: "Live unpaid probe by Nightshift; reputation from nohumans.directory and 402index.io public APIs; wallet data from Base RPC.",
+    sources: "Live unpaid probe by Nightshift; reputation from nohumans.directory and 402index.io public APIs; wallet data from Base RPC; onchain_census from the Nightshift 30-day on-chain census of 1,987 x402 seller wallets (/census).",
     note: "Unpaid probe only: this does not pay the endpoint, so it cannot prove delivery. nohumans.directory 'latest_purchase_delivered' is the best delivery evidence when present.",
   };
 }
