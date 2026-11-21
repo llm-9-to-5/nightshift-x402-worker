@@ -15,6 +15,7 @@ import { handleMcp } from "./mcp.js";
 import { snapshotDemand, loadDemand } from "./demand.js";
 import { CENSUS, CENSUS_SUMMARY } from "./census.js";
 import * as awsmp from "./awsmp.js";
+import { x402Revenue } from "./revenue.js";
 
 const NETWORK = "eip155:8453"; // Base mainnet
 const PAY_TO = SITE.wallet;
@@ -58,6 +59,12 @@ const PRODUCTS = {
     description: "Check an x402 endpoint before paying it: probes it unpaid, decodes the 402 (v1 body or v2 header), validates network, asset (canonical USDC?), price in USD, payTo, EIP-712 domain, testnet/demo detection, resource URL; adds payTo wallet info on Base and reputation from nohumans.directory (incl. whether its latest real purchase delivered) and 402index. Returns verdict looks_ok / caution / do_not_pay.",
     params: { url: { type: "string", description: "The x402 endpoint URL you are about to pay", required: true, example: "https://api.aifoundry.sh/v1/weather" }, method: { type: "string", description: "HTTP method to probe with (default GET)" }, body: { type: "object", description: "Optional JSON body to send when probing with POST" } },
     example: { url: "https://api.example.com/v1/weather", http_status: 402, transport: "header (x402 v2)", payment_options: [{ network: "eip155:8453", network_name: "Base", asset_is_usdc: true, price_usd: 0.01, pay_to: "0xCAc5...18a7", eip712_domain: { name: "USD Coin", version: "2" }, issues: [] }], directories: { nohumans: { status: "verified", paid_verified: true, latest_purchase_delivered: true } }, verdict: "looks_ok", problems: [], warnings: [] },
+  },
+  "/api/x402-revenue": {
+    price: "$0.001",
+    description: "Does this x402 seller actually get paid? On-chain revenue for an x402 endpoint or payTo wallet on Base: USDC payments <= $1 over 30 days, distinct payers, revenue excluding directory test buyers, rank and percentile among 1,987 listed seller wallets. From Nightshift's on-chain census (snapshot date in response).",
+    params: { url: { type: "string", description: "x402 endpoint URL (its payTo is read from the 402)", example: "https://blockrun.ai/api/v1/images/generations" }, payTo: { type: "string", description: "Or: the seller's EVM payTo wallet address" } },
+    example: { pay_to: "0x8a5d...", in_census: true, payments_le_1usd_30d: 351, usd_received_30d: 16.59, distinct_payers_30d: 23, usd_excl_directory_test_buyers: 16.2, distinct_payers_excl_directory_test_buyers: 20, rank_by_independent_revenue: 22, percentile: 98.9, signal: "many independent payers", census: { snapshot: "2026-11-21", window_days: 30, wallets_in_census: 1987, median_earner_usd: 0.03 } },
   },
   "/api/seller-audit": {
     price: "$0.05",
@@ -230,6 +237,13 @@ app.on(["GET", "POST"], "/api/x402-check", async (c) => {
   const q = await params(c);
   const r = await x402Check({ url: q.url, method: q.method, body: q.body });
   if (r.error) return c.json({ error: r.error }, r.code);
+  return c.json(r);
+});
+
+app.on(["GET", "POST"], "/api/x402-revenue", async (c) => {
+  const q = await params(c);
+  const r = await x402Revenue({ url: q.url, payTo: q.payTo || q.payto || q.wallet });
+  if (r.error) return c.json(r, r.code);
   return c.json(r);
 });
 
