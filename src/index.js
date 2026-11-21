@@ -14,6 +14,7 @@ import { sellerAudit } from "./selleraudit.js";
 import { handleMcp } from "./mcp.js";
 import { snapshotDemand, loadDemand } from "./demand.js";
 import { CENSUS, CENSUS_SUMMARY } from "./census.js";
+import * as awsmp from "./awsmp.js";
 
 const NETWORK = "eip155:8453"; // Base mainnet
 const PAY_TO = SITE.wallet;
@@ -142,6 +143,14 @@ app.use("/api/*", async (c, next) => {
   if (c.env?.DEV_NO_PAY === "1" && new URL(c.req.url).hostname === "localhost") return next(); // local testing only (.dev.vars, never deployed)
   if (c.env?.INTERNAL_PREVIEW === true || c.env?.INTERNAL_MCP === true) return next(); // free fixed-input previews, dispatched internally from /preview/*
   if (c.env?.OWNER_TEST_KEY && c.req.header("x-owner-test") === c.env.OWNER_TEST_KEY) return next(); // operator/agent smoke tests in production (secret)
+  if (c.req.method === "HEAD") return c.body(null, 405, { Allow: "GET, POST" }); // never run a paid handler unpaid
+  if (awsmp.awsmpEnabled(c.env)) {
+    const server = new x402ResourceServer([new StaticFacilitator({ url: FACILITATOR }), awsmp.facilitatorClient(c.env)]).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension);
+    awsmp.addToServer(server, c.env);
+    const r2 = {};
+    for (const [k, v] of Object.entries(routes)) r2[k] = { ...v, accepts: [...v.accepts, awsmp.option(c.env, PRODUCTS[k.split(" ")[1]].price, v.description)] };
+    return paymentMiddleware(r2, server)(c, next);
+  }
   const server = new x402ResourceServer(new StaticFacilitator({ url: FACILITATOR })).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension);
   return paymentMiddleware(routes, server)(c, next);
 });
@@ -269,6 +278,8 @@ app.get("/demand", async (c) => {
 <table><tr><th>#</th><th>Search term</th><th>Buyers${prev ? ` (vs ${prev.day})` : ""}</th><th>Searches</th><th>Days asked</th></tr>${rows}</table>
 <p>Raw history: <a href="/demand.json"><code>/demand.json</code></a>. Before paying any endpoint you find for these needs, you can check it with <a href="/api-docs"><code>/api/x402-check</code></a>.</p>`));
 });
+
+app.get("/.well-known/jwks.json", (c) => (awsmp.awsmpEnabled(c.env) ? c.json(awsmp.jwks(c.env)) : c.json({ keys: [] })));
 
 app.get("/census", (c) => {
   const S = CENSUS_SUMMARY;
