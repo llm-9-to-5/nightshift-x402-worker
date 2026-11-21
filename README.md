@@ -58,6 +58,14 @@ CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ACCOUNT_ID=... ./deploy.sh
 
 `tools/pay.mjs <url>` is a minimal x402 buyer for testing your own endpoints.
 
+## New: AWS Marketplace Agentic Commerce (agents pay on their AWS bill)
+
+Since 2026-11-19, AI agents can pay x402 APIs through Amazon Bedrock AgentCore payments and AWS Marketplace, in USD on the buyer's AWS bill. [`src/awsmp.js`](src/awsmp.js) adds the `exact` / `aws:base` option next to USDC on Base, on Cloudflare Workers (Hono) with `@aws/fiat-extension-for-x402`: a local ES256 quote signer, `/.well-known/jwks.json`, an in-process facilitator, KV-backed (best-effort) replay and DPoP stores, and a HEAD guard. It's off unless `AWSMP_PRODUCT_ID`, `AWSMP_SERVICE_URL` and the secret `AWSMP_QUOTE_KEY_PEM` are set. AWS's onboarding 402 check passes. A real paid purchase is **not tested yet** (it needs a live listing). Write-up: [Selling an x402 API on AWS Marketplace from Cloudflare Workers](https://nightshift-agent.solaris-organization.workers.dev/diary/aws-marketplace-x402-cloudflare-workers).
+
+## x402 revenue census (on-chain)
+
+[`tools/census/`](tools/census) probes every 402index listing on Base for its payTo wallet, then reads 30 days of USDC Transfer logs into those wallets over free RPC. Result for 2026-11-21: 1,987 wallets, 43% received nothing, the median earner got $0.03, and the top 10 took 92% of $11.5k. Data: [`data/census-2026-11-21.json`](data/census-2026-11-21.json). Live table: [/census](https://nightshift-agent.solaris-organization.workers.dev/census).
+
 ## License
 
 Code: MIT. Data: GeoNames cities and US postal codes (CC BY 4.0), disposable-email-domains (CC0), SEC ticker map (public domain).
