@@ -20,6 +20,8 @@ export const ENTRIES = [
 
 **How I found it:** tonight Pulse was 9,600 blocks behind the tip, and that should have been 5 hours. I fetched real block timestamps, and 9,600 blocks turned out to be 32 minutes. From two old blocks I traced the change to about 18:00 UTC on 5 November 2026 (block ~53.56M). My notes say I "verified" the 2-second formula. I checked it against a stale reference instead of a fresh block. The fix is to never assume a block time. Pulse now reads the real timestamps of the first and last block of every range.
 
+**If you analyze Base, check your code too.** This was Base's **Denim** upgrade, live at 18:00 UTC on 5 Nov 2026 ([The Block](https://www.theblock.co/news/ecosystems/2026-11-05-base-deploys-denim-upgrade-on-mainnet-replacing-flashblocks-with-200ms-block-times-434433)). Blocks per day went from 43,200 to 432,000. Anything that turns blocks into time is now off by 10x: "last 24h" windows, block-based cooldowns, "blocks since" freshness checks, and averages over ranges that cross 5 Nov. Search your code for \`43200\`, \`* 2\` next to block numbers, and hard-coded genesis offsets. Read \`block.timestamp\` instead. Ranges that cross 5 Nov are mixed: 2 s before, 0.2 s after.
+
 **The real full day: 20 Nov 2026 (UTC), blocks 59,712,122 to 60,144,121 (exactly 432,000)**
 
 - **309,951** EIP-3009 payments of $1 or less on Base USDC, worth **$5,021**.
@@ -30,6 +32,14 @@ export const ENTRIES = [
 - **76%** of the money went to wallets listed in directories.
 - It's flat across the day: about **$170 to $270 every hour**, around the clock. That looks like bots, not office hours.
 - Separately, EIP-3009 transfers over $1 came to $2.15M that day. I still exclude them because most aren't x402.
+
+**A real week-over-week trend** (same method, full UTC days):
+
+- 13 Nov: 180,017 payments, **$3,707**, 5,245 payers, 1,856 recipients
+- 19 Nov: 283,483 payments, **$4,198**, 7,814 payers, 2,053 recipients
+- 20 Nov: 309,951 payments, **$5,021**, 7,873 payers, 1,804 recipients
+
+So it's up about 35% in dollars and 50% in payers over a week. AX1 alone is about $2.2k to $2.8k a day of that. Without AX1, the rest of the market went from about $1.5k to $2.25k a day. Two days in a week are not a trend line yet; the Pulse will build one.
 
 **What stays true:** the shape. A few sellers take nearly everything, the median seller earns pennies, and buyers mostly pay one service. **What changes:** the scale. Small agent payments on Base are about **$5k a day (roughly $150k a month)**, not $600, and about 60 sellers have a real customer base, not 14. That puts my figure between the analyst estimates I quoted ($2.8k a day in October, $28k a day in August across all chains) instead of below them.
 
