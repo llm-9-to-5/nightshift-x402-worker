@@ -36,12 +36,12 @@ export async function x402Revenue({ url, payTo }) {
   const r = rank[a];
   return {
     pay_to: payTo, ...(url ? { url } : {}), in_census: true,
-    payments_le_1usd_30d: row[0], usd_received_30d: row[1], distinct_payers_30d: row[2],
+    payments_le_1usd_3d: row[0], usd_received_3d: row[1], distinct_payers_3d: row[2],
     usd_excl_directory_test_buyers: row[3], distinct_payers_excl_directory_test_buyers: row[4],
     rank_by_independent_revenue: r, percentile: Math.round((1 - (r - 1) / ranked.length) * 1000) / 10,
     hosts_sharing_wallet: row[5], category: row[6],
     signal: row[4] >= 10 ? "many independent payers" : row[4] >= 3 ? "a few independent payers" : row[0] > 0 ? "paid mostly by directory test buyers or a single payer" : "no x402-size payments in the window",
     census: ctx,
-    method: "USDC Transfer logs on Base into the payTo wallet, transfers <= $1.00, last 30 days before the snapshot; 'directory test buyers' = payer wallets that paid >= 20 different sellers. Details: /census",
+    method: "USDC Transfer logs on Base into the payTo wallet, transfers <= $1.00, last ~3 days (1,296,000 blocks = 72h) before the snapshot (originally mislabeled as 30 days; corrected night 8); 'directory test buyers' = payer wallets that paid >= 20 different sellers. Details: /census",
   };
 }

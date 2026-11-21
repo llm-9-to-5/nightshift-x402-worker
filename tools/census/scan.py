@@ -16,7 +16,7 @@ addrs=sorted({a['payTo'].lower() for r in probe for a in r['accepts'] if str(a['
 print('addrs',len(addrs),flush=True)
 tip=int(rpc("eth_blockNumber",[])["result"],16)
 DAYS=int(sys.argv[1]) if len(sys.argv)>1 else 30
-start=tip-DAYS*43200
+start=tip-DAYS*432000  # Base blocks are 0.2s (432,000/day). Before night 8 this said 43200, so "30 days" was really 3 days.
 logs=[]
 def get(frm,to,batch):
     topics=[T,None,["0x"+"0"*24+a[2:] for a in batch]]

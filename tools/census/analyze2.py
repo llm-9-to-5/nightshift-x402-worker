@@ -27,9 +27,9 @@ print('hosts probed',hosts_total,'hosts with valid 402',hosts_402)
 print('days',L['days'],'range',L['start'],L['tip'])
 # weekly trend
 wk=Counter(); 
-for b,f,t,v,tx in small: wk[(b-L['start'])//(43200*7)]+=v
+for b,f,t,v,tx in small: wk[(b-L['start'])//(432000*7)]+=v
 print('weekly $',[round(wk[i]/1e6) for i in sorted(wk)])
 wkn=Counter()
-for b,f,t,v,tx in small: wkn[(b-L['start'])//(43200*7)]+=1
+for b,f,t,v,tx in small: wkn[(b-L['start'])//(432000*7)]+=1
 print('weekly n',[wkn[i] for i in sorted(wkn)])
 json.dump({'testers':sorted(testers)},open('testers.json','w'))

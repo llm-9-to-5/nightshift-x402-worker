@@ -5,10 +5,12 @@ const RPC = "https://base-rpc.publicnode.com";
 const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 const AU = "0x98de503528ee59b575ef0c0a2576a82497bfc029a5685b209e9ec333479b10a5";
 const TR = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
-const MAX_BLOCKS = 900; // per run (~30 min of Base blocks), keeps subrequests and CPU small
+const MAX_BLOCKS = 3600; // per run (~12 min of Base blocks at 0.2s/block); cron runs every 10 min
 
 const RPCS = ["https://gateway.tenderly.co/public/base", "https://base.gateway.tenderly.co", RPC];
-const BASE_T0 = 1674438335; // Base: timestamp = T0 + 2*block (verified 2026-11-21)
+// Timestamps: read the real timestamps of the first and last block of each range and interpolate.
+// (Night 8 correction: Base blocks are 0.2s now, not 2s. Never assume a block time.)
+const blockTs = async (b) => parseInt((await rpc("eth_getBlockByNumber", ["0x" + b.toString(16), false])).timestamp, 16);
 async function rpc(method, params) {
   const errs = [];
   for (const [i, url] of [...RPCS, ...RPCS].entries()) {
@@ -30,22 +32,27 @@ export async function pulseTick(env) {
   const from = last ? last + 1 : tip - 300;
   if (from > tip) return { skipped: true };
   const to = Math.min(tip, from + MAX_BLOCKS - 1);
-  const toTs = BASE_T0 + 2 * to;
-  const au = await rpc("eth_getLogs", [{ address: USDC, topics: [AU], fromBlock: "0x" + from.toString(16), toBlock: "0x" + to.toString(16) }]);
-  const want = new Set(au.map((l) => l.transactionHash + ":" + (parseInt(l.logIndex, 16) + 1)));
-  const auth = [...new Set(au.map((l) => l.topics[1]))];
+  const [fromTs, toTs] = await Promise.all([blockTs(from), blockTs(to)]);
+  const tsOf = (b) => (to === from ? toTs : Math.round(fromTs + ((b - from) * (toTs - fromTs)) / (to - from)));
   const rows = [];
-  for (let i = 0; i < auth.length; i += 80) {
-    const tr = await rpc("eth_getLogs", [{ address: USDC, topics: [TR, auth.slice(i, i + 80)], fromBlock: "0x" + from.toString(16), toBlock: "0x" + to.toString(16) }]);
-    for (const l of tr) if (want.has(l.transactionHash + ":" + parseInt(l.logIndex, 16))) {
-      const b = parseInt(l.blockNumber, 16);
-      rows.push({ b, ts: toTs - (to - b) * 2, from: "0x" + l.topics[1].slice(-40), to: "0x" + l.topics[2].slice(-40), v: Number(BigInt(l.data)) / 1e6 });
+  // Tenderly's public RPC caps eth_getLogs at 1,000 blocks, so read in 1,000-block chunks.
+  for (let a = from; a <= to; a += 1000) {
+    const z = Math.min(to, a + 999), fb = "0x" + a.toString(16), tb = "0x" + z.toString(16);
+    const au = await rpc("eth_getLogs", [{ address: USDC, topics: [AU], fromBlock: fb, toBlock: tb }]);
+    const want = new Set(au.map((l) => l.transactionHash + ":" + (parseInt(l.logIndex, 16) + 1)));
+    const auth = [...new Set(au.map((l) => l.topics[1]))];
+    for (let i = 0; i < auth.length; i += 80) {
+      const tr = await rpc("eth_getLogs", [{ address: USDC, topics: [TR, auth.slice(i, i + 80)], fromBlock: fb, toBlock: tb }]);
+      for (const l of tr) if (want.has(l.transactionHash + ":" + parseInt(l.logIndex, 16))) {
+        const b = parseInt(l.blockNumber, 16);
+        rows.push({ b, ts: tsOf(b), from: "0x" + l.topics[1].slice(-40), to: "0x" + l.topics[2].slice(-40), v: Number(BigInt(l.data)) / 1e6 });
+      }
     }
   }
   const days = {};
   const get = async (d) => (days[d] ||= (await env.STATS.get(`pulse:day:${d}`, "json")) || emptyDay(d));
   // make sure every day touched by the block range exists even with no rows
-  for (const ts of [toTs - (to - from) * 2, toTs]) await get(new Date(ts * 1000).toISOString().slice(0, 10));
+  for (const ts of [fromTs, toTs]) await get(new Date(ts * 1000).toISOString().slice(0, 10));
   for (const r of rows) {
     const iso = new Date(r.ts * 1000).toISOString(); const D = await get(iso.slice(0, 10));
     if (!(r.v > 0 && r.v <= 1)) { D.n_big++; D.usd_big += r.v; continue; }

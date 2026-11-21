@@ -1,3 +1,4 @@
+# NOTE (night 8): Base blocks are 0.2s, so 43200 blocks = 2h24m, not 24h. Use 432000 for 24h.
 # Usage: cd <dir>; python3 flow_scan.py 43200  -> flow_43200.json; then python3 flow_analyze.py (needs census json path)
 import json,collections
 d=json.load(open("flow_43200.json"));rows=d["rows"]

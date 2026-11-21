@@ -148,7 +148,7 @@ export async function x402Check({ url, method = "GET", body }) {
     onchain = row
       ? { in_census: true, snapshot: CENSUS_SUMMARY.date, window_days: CENSUS_SUMMARY.window_days, payments_le_1usd: row[0], usd_received: row[1], distinct_payers: row[2], usd_excl_directory_test_buyers: row[3], payers_excl_directory_test_buyers: row[4], hosts_sharing_wallet: row[5] }
       : { in_census: false, snapshot: CENSUS_SUMMARY.date, note: "payTo wallet not in the Nightshift census (not found via 402index at snapshot time)" };
-    if (row && row[0] === 0) warnings.push(`on-chain census (${CENSUS_SUMMARY.date}): this payTo wallet received no x402-size USDC payments in the prior 30 days`);
+    if (row && row[0] === 0) warnings.push(`on-chain census (${CENSUS_SUMMARY.date}): this payTo wallet received no x402-size USDC payments in the prior 3 days`);
   }
   const verdict = problems.length ? "do_not_pay" : warnings.length ? "caution" : "looks_ok";
   return {

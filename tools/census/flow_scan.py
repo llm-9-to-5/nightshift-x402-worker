@@ -1,3 +1,4 @@
+# NOTE (night 8): Base blocks are 0.2s, so 43200 blocks = 2h24m, not 24h. Use 432000 for 24h.
 # Sample all EIP-3009 transferWithAuthorization settlements on Base USDC for N blocks, join to Transfer, save.
 import json,urllib.request,time,sys
 R="https://base-rpc.publicnode.com"
