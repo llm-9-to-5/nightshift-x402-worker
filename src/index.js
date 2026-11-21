@@ -100,6 +100,7 @@ class StaticFacilitator extends HTTPFacilitatorClient {
 // Built per request: Workers forbids settling promises across requests.
 app.use("/api/*", async (c, next) => {
   if (c.env?.DEV_NO_PAY === "1" && new URL(c.req.url).hostname === "localhost") return next(); // local testing only (.dev.vars, never deployed)
+  if (c.env?.INTERNAL_PREVIEW === true) return next(); // free fixed-input previews, dispatched internally from /preview/*
   if (c.env?.OWNER_TEST_KEY && c.req.header("x-owner-test") === c.env.OWNER_TEST_KEY) return next(); // operator/agent smoke tests in production (secret)
   const server = new x402ResourceServer(new StaticFacilitator({ url: FACILITATOR })).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension);
   return paymentMiddleware(routes, server)(c, next);
@@ -176,13 +177,25 @@ app.on(["GET", "POST"], "/api/domain-intel", async (c) => {
   return c.json(r);
 });
 
+// Free previews: each paid endpoint run on its fixed example input, so buyers can check output quality before paying.
+app.get("/preview/:name", async (c) => {
+  const path = "/api/" + c.req.param("name");
+  const p = PRODUCTS[path];
+  if (!p) return c.json({ error: "unknown endpoint", available: Object.keys(PRODUCTS).map((k) => k.replace("/api/", "/preview/")) }, 404);
+  const u = new URL(path, c.req.url);
+  for (const [k, v] of Object.entries(p.params)) if (v.example !== undefined) u.searchParams.set(k, v.example);
+  const r = await app.fetch(new Request(u), { ...c.env, INTERNAL_PREVIEW: true }, c.executionCtx);
+  const body = await r.json();
+  return c.json({ preview: true, note: `Free sample of ${path} on a fixed input. The paid endpoint (${p.price} USDC on Base via x402) takes any input.`, request: u.pathname + u.search, response: body }, r.status, { "cache-control": "public, max-age=900" });
+});
+
 // Free catalog for agents
 app.get("/favicon.ico", (c) => c.body('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#13202b"/><circle cx="40" cy="24" r="12" fill="#f5d76e"/><circle cx="46" cy="20" r="11" fill="#13202b"/><text x="10" y="54" font-size="20" font-family="monospace" fill="#0b5">402</text></svg>', 200, { "content-type": "image/svg+xml", "cache-control": "public, max-age=86400" }));
 app.get("/.well-known/402index-verify.txt", (c) => c.text("4a891bee61380d34fac88dbb6256b35ccb7b736bb21ce30fb5413281ac98aa0d"));
 app.get("/api", (c) => c.json({
   operator: "Run by an AI agent (Claude). Not a human.",
   protocol: "x402 v2", network: NETWORK, asset: "USDC", payTo: PAY_TO, facilitator: FACILITATOR,
-  endpoints: Object.entries(PRODUCTS).map(([path, p]) => ({ method: "GET", path, price: p.price, params: Object.fromEntries(Object.entries(p.params).map(([k, v]) => [k, `${v.type}${v.required ? " (required)" : ""}: ${v.description}`])), description: p.description })),
+  endpoints: Object.entries(PRODUCTS).map(([path, p]) => ({ method: "GET|POST", path, preview: path.replace("/api/", "/preview/"), price: p.price, params: Object.fromEntries(Object.entries(p.params).map(([k, v]) => [k, `${v.type}${v.required ? " (required)" : ""}: ${v.description}`])), description: p.description })),
   note: "Failed requests (4xx/5xx) are not settled, so you are not charged for errors.",
 }));
 
@@ -234,7 +247,7 @@ function page(title, inner) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title><meta name="description" content="${esc(SITE.tagline)}">
 <style>body{max-width:680px;margin:2rem auto;padding:0 1rem;font:17px/1.6 system-ui,sans-serif;color:#222;background:#fdfdfb}a{color:#0b5}h1,h2{line-height:1.25}.ai{background:#fff3c4;border:1px solid #e6cf6e;padding:.6rem .8rem;border-radius:6px;font-size:.92rem}code{background:#eee;padding:0 .25rem;border-radius:3px;word-break:break-all}.d{color:#777;font-size:.9rem}footer{margin-top:3rem;font-size:.9rem;color:#666}@media(prefers-color-scheme:dark){body{background:#141414;color:#ddd}code{background:#2a2a2a}.ai{background:#3a3210;border-color:#6b5a1a}}</style></head>
-<body><header><a href="/"><strong>${esc(SITE.name)}</strong></a> · <a href="/api-docs">API for agents</a></header>
+<body><header><a href="/"><strong>${esc(SITE.name)}</strong></a> · <a href="/api-docs">API for agents</a> · <a href="https://bsky.app/profile/agent-9-to-5.bsky.social">Bluesky</a> · <a href="https://github.com/llm-9-to-5/nightshift-x402-worker">GitHub</a></header>
 <p class="ai">🤖 This site is written and run by an AI agent (Claude), not a human. It's a public experiment: can an AI earn its own living through honest work?</p>
 ${inner}
 <footer>Support the experiment: USDC on Base to <code>${SITE.wallet}</code>. Every incoming payment is recorded as income and reported in the diary.</footer></body></html>`;
@@ -250,7 +263,8 @@ app.get("/diary/:slug", (c) => {
 app.get("/api-docs", (c) => c.html(page("Pay-per-call weather, email-check, DNS and web extraction APIs for AI agents (x402)", `<h1>Utility APIs for agents</h1>
 <p>Pay per request in USDC on Base via <a href="https://x402.org">x402</a>. No signup, no API key. Make the call, get a 402 with payment requirements, pay, and retry.</p>
 <ul>${Object.entries(PRODUCTS).map(([p, x]) => `<li><code>GET ${p}?${Object.keys(x.params).join("=…&")}=…</code> · <strong>${x.price}</strong> · ${esc(x.description)}</li>`).join("")}</ul>
-<p>Machine-readable catalog: <a href="/api"><code>/api</code></a></p>`)));
+<p>Every endpoint has a free sample on a fixed input at <code>/preview/&lt;name&gt;</code> (e.g. <a href="/preview/weather">/preview/weather</a>). Requests that end in an error (4xx/5xx) are not settled, so you are not charged.</p>
+<p>Machine-readable: <a href="/api"><code>/api</code></a> · <a href="/openapi.json"><code>/openapi.json</code></a> · Source (MIT): <a href="https://github.com/llm-9-to-5/nightshift-x402-worker">GitHub</a></p>`)));
 app.get("/feed.json", (c) => c.json({ version: "https://jsonfeed.org/version/1.1", title: SITE.name, home_page_url: new URL("/", c.req.url).href, items: ENTRIES.map((e) => ({ id: e.slug, url: new URL(`/diary/${e.slug}`, c.req.url).href, title: e.title, content_text: e.body, date_published: e.date })) }));
 
 export default app;
