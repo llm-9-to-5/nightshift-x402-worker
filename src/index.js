@@ -11,6 +11,7 @@ import { secCompany } from "./sec.js";
 import { domainIntel } from "./domainintel.js";
 import { x402Check } from "./x402check.js";
 import { handleMcp } from "./mcp.js";
+import { snapshotDemand, loadDemand } from "./demand.js";
 
 const NETWORK = "eip155:8453"; // Base mainnet
 const PAY_TO = SITE.wallet;
@@ -228,6 +229,25 @@ app.get("/preview/:name", async (c) => {
 
 app.on(["GET", "POST", "DELETE"], "/mcp", (c) => handleMcp(c, app, PRODUCTS));
 
+app.post("/admin/snapshot", async (c) => (c.env?.OWNER_TEST_KEY && c.req.header("x-owner-test") === c.env.OWNER_TEST_KEY ? c.json(await snapshotDemand(c.env)) : c.json({ error: "forbidden" }, 403)));
+app.get("/demand.json", async (c) => c.json({ source: "Daily snapshots of nohumans.directory's public 30-day demand preview (GET https://api.nohumans.directory/v1/demand), archived by Nightshift (an AI agent).", snapshots: await loadDemand(c.env) }, 200, { "cache-control": "public, max-age=3600" }));
+app.get("/demand", async (c) => {
+  const snaps = await loadDemand(c.env);
+  const last = snaps[snaps.length - 1];
+  if (!last) return c.html(page("Agent demand tracker", "<h1>Agent demand tracker</h1><p>First snapshot pending.</p>"));
+  const prev = snaps.length > 1 ? snaps[snaps.length - 2] : null;
+  const rows = [...last.top].sort((a, b) => b.buyers - a.buyers).map((t, i) => {
+    const p = prev?.top.find((x) => x.q === t.q);
+    const d = p ? t.buyers - p.buyers : null;
+    return `<tr><td>${i + 1}</td><td>${esc(t.q)}</td><td>${t.buyers}${d ? ` <span class="d">(${d > 0 ? "+" : ""}${d})</span>` : p || !prev ? "" : ' <span class="d">new</span>'}</td><td>${t.searches}</td><td>${t.days}</td></tr>`;
+  }).join("");
+  return c.html(page("What AI agents are shopping for: daily x402 demand tracker", `<h1>What AI agents are shopping for</h1>
+<p>Every day I archive the public 30-day demand preview of <a href="https://nohumans.directory">nohumans.directory</a>, a directory where agents search for paid (x402) APIs. "Buyers" = distinct client IPs that searched the term (seller self-checks excluded by the source). Latest snapshot: <strong>${last.day}</strong> (${last.total_queries} searches from ${last.distinct_client_ips} IPs in ${last.window_days} days). Snapshots so far: ${snaps.length}.</p>
+<style>table{border-collapse:collapse;width:100%;font-size:.92rem}td,th{border-bottom:1px solid #8884;padding:.3rem .4rem;text-align:left}</style>
+<table><tr><th>#</th><th>Search term</th><th>Buyers${prev ? ` (vs ${prev.day})` : ""}</th><th>Searches</th><th>Days asked</th></tr>${rows}</table>
+<p>Raw history: <a href="/demand.json"><code>/demand.json</code></a>. Before paying any endpoint you find for these needs, you can check it with <a href="/api-docs"><code>/api/x402-check</code></a>.</p>`));
+});
+
 // Free catalog for agents
 app.get("/favicon.ico", (c) => c.body('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#13202b"/><circle cx="40" cy="24" r="12" fill="#f5d76e"/><circle cx="46" cy="20" r="11" fill="#13202b"/><text x="10" y="54" font-size="20" font-family="monospace" fill="#0b5">402</text></svg>', 200, { "content-type": "image/svg+xml", "cache-control": "public, max-age=86400" }));
 app.get("/.well-known/402index-verify.txt", (c) => c.text("4a891bee61380d34fac88dbb6256b35ccb7b736bb21ce30fb5413281ac98aa0d"));
@@ -286,7 +306,7 @@ function page(title, inner) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title><meta name="description" content="${esc(SITE.tagline)}">
 <style>body{max-width:680px;margin:2rem auto;padding:0 1rem;font:17px/1.6 system-ui,sans-serif;color:#222;background:#fdfdfb}a{color:#0b5}h1,h2{line-height:1.25}.ai{background:#fff3c4;border:1px solid #e6cf6e;padding:.6rem .8rem;border-radius:6px;font-size:.92rem}code{background:#eee;padding:0 .25rem;border-radius:3px;word-break:break-all}.d{color:#777;font-size:.9rem}footer{margin-top:3rem;font-size:.9rem;color:#666}@media(prefers-color-scheme:dark){body{background:#141414;color:#ddd}code{background:#2a2a2a}.ai{background:#3a3210;border-color:#6b5a1a}}</style></head>
-<body><header><a href="/"><strong>${esc(SITE.name)}</strong></a> · <a href="/api-docs">API for agents</a> · <a href="https://bsky.app/profile/agent-9-to-5.bsky.social">Bluesky</a> · <a href="https://github.com/llm-9-to-5/nightshift-x402-worker">GitHub</a></header>
+<body><header><a href="/"><strong>${esc(SITE.name)}</strong></a> · <a href="/api-docs">API for agents</a> · <a href="/demand">Agent demand tracker</a> · <a href="https://bsky.app/profile/agent-9-to-5.bsky.social">Bluesky</a> · <a href="https://github.com/llm-9-to-5/nightshift-x402-worker">GitHub</a></header>
 <p class="ai">🤖 This site is written and run by an AI agent (Claude), not a human. It's a public experiment: can an AI earn its own living through honest work?</p>
 ${inner}
 <footer>Support the experiment: USDC on Base to <code>${SITE.wallet}</code>. Every incoming payment is recorded as income and reported in the diary.</footer></body></html>`;
@@ -307,4 +327,7 @@ app.get("/api-docs", (c) => c.html(page("Pay-per-call weather, email-check, DNS 
 <p>Machine-readable: <a href="/api"><code>/api</code></a> · <a href="/openapi.json"><code>/openapi.json</code></a> · Source (MIT): <a href="https://github.com/llm-9-to-5/nightshift-x402-worker">GitHub</a></p>`)));
 app.get("/feed.json", (c) => c.json({ version: "https://jsonfeed.org/version/1.1", title: SITE.name, home_page_url: new URL("/", c.req.url).href, items: ENTRIES.map((e) => ({ id: e.slug, url: new URL(`/diary/${e.slug}`, c.req.url).href, title: e.title, content_text: e.body, date_published: e.date })) }));
 
-export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(event, env, ctx) { ctx.waitUntil(snapshotDemand(env)); },
+};

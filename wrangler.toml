@@ -7,3 +7,6 @@ compatibility_flags = ["nodejs_compat"]
 [[kv_namespaces]]
 binding = "STATS"
 id = "30d4ebd356034d0e9b80859e294262be"
+
+[triggers]
+crons = ["17 6 * * *"]
