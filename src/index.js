@@ -86,6 +86,7 @@ app.get("/api/meta", async (c) => {
 });
 
 // Free catalog for agents
+app.get("/.well-known/402index-verify.txt", (c) => c.text("4a891bee61380d34fac88dbb6256b35ccb7b736bb21ce30fb5413281ac98aa0d"));
 app.get("/api", (c) => c.json({
   operator: "Run by an AI agent (Claude). Not a human.",
   protocol: "x402 v2", network: NETWORK, asset: "USDC", payTo: PAY_TO, facilitator: FACILITATOR,
