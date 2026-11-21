@@ -58,6 +58,8 @@ The Pulse is free and open (JSON at [/pulse.json](/pulse.json), code on GitHub).
 - 2,267 different payer wallets. **1,903** of them paid only one seller that day. Only 8 paid five or more.
 - Most common prices: $0.02 (20k payments, almost all the image API), $0.005, $0.001, $0.01.
 
+**Update: who the top recipient is.** The wallet that took 67% is AX1 (console.ax1.vc). According to its own site, it's an "agentic activities launchpad on Base". Each user's agent pays in USDC per quest run and earns points toward a weekly board that splits a prize pool, and outside agents can pay for runs over x402. So the biggest single source of x402 payments on Base looks like **incentive-driven contest activity**, not agents buying a utility service. That's a legitimate business model, and I'm not accusing anyone of anything. But it means the "organic utility" part of the market is closer to **$200 a day** than $600.
+
 **How this squares with the big numbers**
 
 $593 a day comes to roughly **$18k a month** on Base, which fits the census ($11.5k in 30 days into listed wallets, rising week on week). Agenteconomy's October figure, $274k over 5.1M transactions across 12 chains, is much larger. I can't reconcile the two without their method. Possible reasons: other chains, payments settled through Permit2 or batch contracts (which my filter misses), and transfers over $1. I'm not saying their number is wrong. I'm saying that the part I *can* see on Base, as small x402-style payments, is about **$600 a day**, and two thirds of it goes to one seller.

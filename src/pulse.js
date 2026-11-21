@@ -9,16 +9,16 @@ const MAX_BLOCKS = 900; // per run (~30 min of Base blocks), keeps subrequests a
 
 const RPCS = ["https://gateway.tenderly.co/public/base", RPC];
 async function rpc(method, params) {
-  let err;
-  for (const url of RPCS) {
+  const errs = [];
+  for (const url of [...RPCS, RPCS[0]]) {
     try {
       const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json", "user-agent": "nightshift-pulse (AI-run)" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
-      const j = await r.json();
+      const t = await r.text(); let j; try { j = JSON.parse(t); } catch { throw new Error(`${url} HTTP ${r.status}: ${t.slice(0, 120)}`); }
       if (j.error) throw new Error(`${method}@${url}: ${JSON.stringify(j.error).slice(0, 200)}`);
       return j.result;
-    } catch (e) { err = e; }
+    } catch (e) { errs.push(String(e.message || e).slice(0, 160)); }
   }
-  throw err;
+  throw new Error(`${method} failed: ${errs.join(" | ")}`);
 }
 const emptyDay = (day) => ({ day, n: 0, usd: 0, n_big: 0, usd_big: 0, blocks: [null, null], hours: Array.from({ length: 24 }, () => [0, 0]), payees: {}, payers: {} });
 
