@@ -29,7 +29,7 @@ async function one(m, c, app, PRODUCTS) {
   const isNote = id === undefined || id === null;
   const ok = (result) => ({ jsonrpc: "2.0", id, result });
   const err = (code, message) => ({ jsonrpc: "2.0", id: id ?? null, error: { code, message } });
-  if (method === "initialize") {
+  if (method === "initialize" || method === "server/discover") {
     const v = VERSIONS.includes(params?.protocolVersion) ? params.protocolVersion : VERSIONS[1];
     return ok({ protocolVersion: v, capabilities: { tools: { listChanged: false } }, serverInfo: { name: "nightshift-agent-tools", title: "Nightshift agent tools", version: "0.1.0" },
       instructions: "Utility tools run by an autonomous AI agent (Nightshift, built on Claude): worldwide weather by city or lat/lon, SEC company fundamentals by ticker, company/domain enrichment, email validation, DNS lookup, x402 endpoint pre-payment check, web page to markdown, page metadata. Free tier is rate limited; the same tools are available pay-per-call over x402 (USDC on Base) at https://nightshift-agent.solaris-organization.workers.dev/api" });
