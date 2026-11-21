@@ -10,6 +10,7 @@ import { dnsLookup, emailCheck } from "./dns.js";
 import { secCompany } from "./sec.js";
 import { domainIntel } from "./domainintel.js";
 import { x402Check } from "./x402check.js";
+import { sellerAudit } from "./selleraudit.js";
 import { handleMcp } from "./mcp.js";
 import { snapshotDemand, loadDemand } from "./demand.js";
 
@@ -54,6 +55,12 @@ const PRODUCTS = {
     description: "Check an x402 endpoint before paying it: probes it unpaid, decodes the 402 (v1 body or v2 header), validates network, asset (canonical USDC?), price in USD, payTo, EIP-712 domain, testnet/demo detection, resource URL; adds payTo wallet info on Base and reputation from nohumans.directory (incl. whether its latest real purchase delivered) and 402index. Returns verdict looks_ok / caution / do_not_pay.",
     params: { url: { type: "string", description: "The x402 endpoint URL you are about to pay", required: true, example: "https://api.aifoundry.sh/v1/weather" }, method: { type: "string", description: "HTTP method to probe with (default GET)" }, body: { type: "object", description: "Optional JSON body to send when probing with POST" } },
     example: { url: "https://api.example.com/v1/weather", http_status: 402, transport: "header (x402 v2)", payment_options: [{ network: "eip155:8453", network_name: "Base", asset_is_usdc: true, price_usd: 0.01, pay_to: "0xCAc5...18a7", eip712_domain: { name: "USD Coin", version: "2" }, issues: [] }], directories: { nohumans: { status: "verified", paid_verified: true, latest_purchase_delivered: true } }, verdict: "looks_ok", problems: [], warnings: [] },
+  },
+  "/api/seller-audit": {
+    price: "$0.05",
+    description: "Audit YOUR x402 API as a seller: checks /openapi.json and /.well-known/x402 discovery (x-guidance, contact email, schemas), probes up to 8 paid routes unpaid (402 on GET and POST, decodable challenge, canonical USDC, EIP-712 domain, testnet, bazaar extension, declared vs live price, latency), directory presence (402index, nohumans.directory delivery record), and your price vs paid-verified competitors. Returns a score and a prioritized fix list.",
+    params: { origin: { type: "string", description: "Your API origin (https://api.example.com) or one endpoint URL", required: true, example: "https://nightshift-agent.solaris-organization.workers.dev" } },
+    example: { origin: "https://api.example.com", score: 76, summary: "1/1 tested routes return a valid USDC x402 challenge; 1 route issues; 2 origin-level fixes.", discovery: { openapi_json: { found: true, has_x_guidance: false } }, routes: [{ path: "/v1/weather", status: 402, price_usd: 0.01, issues: ["priced at $0.01, over 2x the median ($0.002) of paid-verified competitors"], market: { paid_verified_competitors: 10, median_usd: 0.002 } }], fixes: ["Add info.x-guidance to /openapi.json..."] },
   },
   "/api/email-check": {
     price: "$0.002",
@@ -215,6 +222,13 @@ app.on(["GET", "POST"], "/api/x402-check", async (c) => {
   return c.json(r);
 });
 
+app.on(["GET", "POST"], "/api/seller-audit", async (c) => {
+  const q = await params(c);
+  const r = await sellerAudit({ origin: q.origin || q.url });
+  if (r.error) return c.json({ error: r.error }, r.code);
+  return c.json(r);
+});
+
 // Free previews: each paid endpoint run on its fixed example input, so buyers can check output quality before paying.
 app.get("/preview/:name", async (c) => {
   const path = "/api/" + c.req.param("name");
@@ -284,7 +298,7 @@ app.get("/openapi.json", (c) => {
     info: {
       title: "Nightshift utility API for agents", version: "0.3.0",
       description: "Pay-per-call weather, SEC company fundamentals, company/domain enrichment, email validation, DNS lookup, and web-to-markdown extraction via x402 (USDC on Base). Operated by an AI agent (Claude). Errors (4xx/5xx) are not settled.",
-      "x-guidance": "All endpoints accept GET with query params or POST with a JSON body. Weather: POST /api/weather {\"q\":\"Paris, FR\"} or {\"lat\":48.85,\"lon\":2.35}. Email validation: POST /api/email-check {\"email\":\"a@b.com\"}. DNS: POST /api/dns {\"domain\":\"example.com\",\"type\":\"MX,TXT\"}. Page to markdown: POST /api/extract {\"url\":\"https://...\"}. Page metadata: POST /api/meta {\"url\":\"https://...\"}. SEC company fundamentals: POST /api/sec-company {\"ticker\":\"AAPL\"}. Company/domain enrichment: POST /api/domain-intel {\"domain\":\"stripe.com\"}. Check an x402 endpoint before paying it: POST /api/x402-check {\"url\":\"https://...\"}.",
+      "x-guidance": "All endpoints accept GET with query params or POST with a JSON body. Weather: POST /api/weather {\"q\":\"Paris, FR\"} or {\"lat\":48.85,\"lon\":2.35}. Email validation: POST /api/email-check {\"email\":\"a@b.com\"}. DNS: POST /api/dns {\"domain\":\"example.com\",\"type\":\"MX,TXT\"}. Page to markdown: POST /api/extract {\"url\":\"https://...\"}. Page metadata: POST /api/meta {\"url\":\"https://...\"}. SEC company fundamentals: POST /api/sec-company {\"ticker\":\"AAPL\"}. Company/domain enrichment: POST /api/domain-intel {\"domain\":\"stripe.com\"}. Check an x402 endpoint before paying it: POST /api/x402-check {\"url\":\"https://...\"}. Audit your own x402 API as a seller: POST /api/seller-audit {\"origin\":\"https://your.api\"}.",
       contact: { url: origin },
     },
     servers: [{ url: origin }], paths,

@@ -1,5 +1,5 @@
 // Pre-payment check of a third-party x402 endpoint: decode its 402, sanity-check terms, and pull directory reputation.
-const USDC = {
+export const USDC = {
   "eip155:8453": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
   "eip155:84532": "0x036cbd53842c5426634e7929541ec2318f3dcf7e",
   "eip155:1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -10,11 +10,11 @@ const USDC = {
   "eip155:42220": "0xceba9300f2b948710d2653dd7b07f33a8b32118c",
   "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
 };
-const V1_NET = { base: "eip155:8453", "base-sepolia": "eip155:84532", ethereum: "eip155:1", polygon: "eip155:137", arbitrum: "eip155:42161", optimism: "eip155:10", avalanche: "eip155:43114", celo: "eip155:42220", solana: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp" };
+export const V1_NET = { base: "eip155:8453", "base-sepolia": "eip155:84532", ethereum: "eip155:1", polygon: "eip155:137", arbitrum: "eip155:42161", optimism: "eip155:10", avalanche: "eip155:43114", celo: "eip155:42220", solana: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp" };
 const NET_NAME = { "eip155:8453": "Base", "eip155:84532": "Base Sepolia (TESTNET)", "eip155:1": "Ethereum", "eip155:137": "Polygon", "eip155:42161": "Arbitrum", "eip155:10": "Optimism", "eip155:43114": "Avalanche", "eip155:42220": "Celo", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": "Solana" };
 const TESTNETS = new Set(["eip155:84532", "eip155:11155111", "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"]);
 
-function b64json(s) {
+export function b64json(s) {
   try { const bin = atob(s.trim()); const bytes = Uint8Array.from(bin, (ch) => ch.charCodeAt(0)); return JSON.parse(new TextDecoder().decode(bytes)); } catch { return null; }
 }
 
@@ -33,7 +33,7 @@ async function baseWalletInfo(addr) {
   } catch { return null; }
 }
 
-async function nohumans(url) {
+export async function nohumans(url) {
   try {
     const r = await fetch(`https://api.nohumans.directory/v1/resolve?url=${encodeURIComponent(url)}`, { cf: { cacheTtl: 600 } });
     const j = await r.json();
@@ -43,7 +43,7 @@ async function nohumans(url) {
       distinct_payers: d.distinct_payers ?? null, listing: d.id ? `https://nohumans.directory/l/${d.id}` : null };
   } catch { return null; }
 }
-async function index402(url) {
+export async function index402(url) {
   try {
     const host = new URL(url).hostname;
     const r = await fetch(`https://402index.io/api/v1/services?q=${encodeURIComponent(host)}&limit=50`, { cf: { cacheTtl: 600 } });
