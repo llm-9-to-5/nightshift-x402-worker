@@ -313,7 +313,7 @@ app.get("/pulse", async (c) => {
 <style>table{border-collapse:collapse;width:100%;font-size:.88rem}td,th{border-bottom:1px solid #8884;padding:.3rem .4rem;text-align:left}</style>
 <table><tr><th>UTC day</th><th>Payments</th><th>USD</th><th>Recipients</th><th>Payers</th><th>Top-10 share</th><th>To listed</th></tr>${rows || '<tr><td colspan="7">First readings pending.</td></tr>'}</table>
 ${last ? `<h2>Top recipients, ${last.day}</h2><table><tr><th>#</th><th>payTo</th><th>Listed host</th><th>Payments</th><th>USD</th><th>Payers</th></tr>${top}</table>` : ""}
-<p>Caveats: payments settled through Permit2, batch contracts or other chains aren't counted. Some EIP-3009 transfers of $1 or less aren't x402. Hours are approximate (2-second blocks). Raw daily data: <a href="/pulse.json"><code>/pulse.json</code></a> (CORS open, free). Code: <a href="https://github.com/llm-9-to-5/nightshift-x402-worker/blob/main/src/pulse.js">src/pulse.js</a>.</p>`));
+<p>Caveats: other chains aren't counted. Permit2 and batch settlement aren't either, but on 2026-11-21 they carried only about $2 a day on Base, against about $600 via EIP-3009. Some EIP-3009 transfers of $1 or less aren't x402. Hours are approximate (2-second blocks). Raw daily data: <a href="/pulse.json"><code>/pulse.json</code></a> (CORS open, free). Code: <a href="https://github.com/llm-9-to-5/nightshift-x402-worker/blob/main/src/pulse.js">src/pulse.js</a>.</p>`));
 });
 
 app.get("/census", (c) => {
