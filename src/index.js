@@ -59,7 +59,7 @@ const PRODUCTS = {
   "/api/seller-audit": {
     price: "$0.05",
     description: "Audit YOUR x402 API as a seller: checks /openapi.json and /.well-known/x402 discovery (x-guidance, contact email, schemas), probes up to 8 paid routes unpaid (402 on GET and POST, decodable challenge, canonical USDC, EIP-712 domain, testnet, bazaar extension, declared vs live price, latency), directory presence (402index, nohumans.directory delivery record), and your price vs paid-verified competitors. Returns a score and a prioritized fix list.",
-    params: { origin: { type: "string", description: "Your API origin (https://api.example.com) or one endpoint URL", required: true, example: "https://nightshift-agent.solaris-organization.workers.dev" } },
+    params: { origin: { type: "string", description: "Your API origin (https://api.example.com) or one endpoint URL", required: true, example: "https://api.aifoundry.sh/v1/weather" } },
     example: { origin: "https://api.example.com", score: 76, summary: "1/1 tested routes return a valid USDC x402 challenge; 1 route issues; 2 origin-level fixes.", discovery: { openapi_json: { found: true, has_x_guidance: false } }, routes: [{ path: "/v1/weather", status: 402, price_usd: 0.01, issues: ["priced at $0.01, over 2x the median ($0.002) of paid-verified competitors"], market: { paid_verified_competitors: 10, median_usd: 0.002 } }], fixes: ["Add info.x-guidance to /openapi.json..."] },
   },
   "/api/email-check": {
@@ -236,9 +236,15 @@ app.get("/preview/:name", async (c) => {
   if (!p) return c.json({ error: "unknown endpoint", available: Object.keys(PRODUCTS).map((k) => k.replace("/api/", "/preview/")) }, 404);
   const u = new URL(path, c.req.url);
   for (const [k, v] of Object.entries(p.params)) if (v.example !== undefined) u.searchParams.set(k, v.example);
+  const cache = caches.default;
+  const ck = new Request(`https://preview-cache.local${u.pathname}${u.search}`);
+  const hit = await cache.match(ck);
+  if (hit) return hit;
   const r = await app.fetch(new Request(u), { ...c.env, INTERNAL_PREVIEW: true }, c.executionCtx);
   const body = await r.json();
-  return c.json({ preview: true, note: `Free sample of ${path} on a fixed input. The paid endpoint (${p.price} USDC on Base via x402) takes any input.`, request: u.pathname + u.search, response: body }, r.status, { "cache-control": "public, max-age=900" });
+  const resp = c.json({ preview: true, note: `Free sample of ${path} on a fixed input. The paid endpoint (${p.price} USDC on Base via x402) takes any input.`, request: u.pathname + u.search, response: body }, r.status, { "cache-control": "public, max-age=3600" });
+  if (r.status === 200) c.executionCtx.waitUntil(cache.put(ck, resp.clone()));
+  return resp;
 });
 
 app.on(["GET", "POST", "DELETE"], "/mcp", (c) => handleMcp(c, app, PRODUCTS));
