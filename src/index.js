@@ -8,6 +8,7 @@ import { SITE, ENTRIES } from "./diary.js";
 import { weather } from "./weather.js";
 import { dnsLookup, emailCheck } from "./dns.js";
 import { secCompany } from "./sec.js";
+import { domainIntel } from "./domainintel.js";
 
 const NETWORK = "eip155:8453"; // Base mainnet
 const PAY_TO = SITE.wallet;
@@ -38,6 +39,12 @@ const PRODUCTS = {
       filings: { type: "integer", description: "Number of recent filings 0-40 (default 10)" },
     },
     example: { company: { name: "Apple Inc.", cik: 320193, tickers: ["AAPL"], exchanges: ["Nasdaq"], industry: "Electronic Computers", fiscal_year_end: "0925" }, financials: { revenue: { concept: "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax", unit: "USD", latest: { value: 478834000000, period_start: "2025-09-28", period_end: "2026-09-26", form: "10-K", filed: "2026-11-03" }, annual: [], quarterly: [] } }, ratios_latest_annual: { gross_margin: 0.4879, net_margin: 0.25 }, recent_filings: [{ form: "10-K", filed: "2026-11-03", url: "https://www.sec.gov/Archives/edgar/data/320193/..." }] },
+  },
+  "/api/domain-intel": {
+    price: "$0.004",
+    description: "Company/domain enrichment from a domain, URL or email: homepage title and description, social profiles (X, LinkedIn, GitHub, etc.), email provider (Google Workspace, Microsoft 365...), email-sending services from SPF, SaaS vendors from DNS verification records (Atlassian, Stripe, Slack, OpenAI...), website tech stack (CDN, framework, CMS, analytics, chat), DMARC policy, and role contact emails.",
+    params: { domain: { type: "string", description: "Domain, URL or email address", required: true, example: "stripe.com" } },
+    example: { domain: "stripe.com", exists: true, website: { title: "Stripe | Financial Infrastructure to Grow Your Revenue", description: "Stripe is a financial services platform...", language: "en-CA" }, social: { twitter: "https://twitter.com/stripe", linkedin: "https://www.linkedin.com/company/stripe", github: "https://github.com/stripe" }, email: { provider: ["Google Workspace"], dmarc_policy: "reject", sending_services_from_spf: ["Salesforce", "Qualtrics"] }, saas_detected_from_dns: ["Atlassian", "Stripe"], tech_stack: ["Cloudflare", "Next.js", "React"] },
   },
   "/api/email-check": {
     price: "$0.002",
@@ -93,6 +100,7 @@ class StaticFacilitator extends HTTPFacilitatorClient {
 // Built per request: Workers forbids settling promises across requests.
 app.use("/api/*", async (c, next) => {
   if (c.env?.DEV_NO_PAY === "1" && new URL(c.req.url).hostname === "localhost") return next(); // local testing only (.dev.vars, never deployed)
+  if (c.env?.OWNER_TEST_KEY && c.req.header("x-owner-test") === c.env.OWNER_TEST_KEY) return next(); // operator/agent smoke tests in production (secret)
   const server = new x402ResourceServer(new StaticFacilitator({ url: FACILITATOR })).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension);
   return paymentMiddleware(routes, server)(c, next);
 });
@@ -161,6 +169,13 @@ app.on(["GET", "POST"], "/api/sec-company", async (c) => {
   return c.json(r);
 });
 
+app.on(["GET", "POST"], "/api/domain-intel", async (c) => {
+  const q = await params(c);
+  const r = await domainIntel(q.domain || q.url || q.email);
+  if (r.error) return c.json({ error: r.error }, r.code);
+  return c.json(r);
+});
+
 // Free catalog for agents
 app.get("/favicon.ico", (c) => c.body('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#13202b"/><circle cx="40" cy="24" r="12" fill="#f5d76e"/><circle cx="46" cy="20" r="11" fill="#13202b"/><text x="10" y="54" font-size="20" font-family="monospace" fill="#0b5">402</text></svg>', 200, { "content-type": "image/svg+xml", "cache-control": "public, max-age=86400" }));
 app.get("/.well-known/402index-verify.txt", (c) => c.text("4a891bee61380d34fac88dbb6256b35ccb7b736bb21ce30fb5413281ac98aa0d"));
@@ -196,8 +211,8 @@ app.get("/openapi.json", (c) => {
     openapi: "3.1.0",
     info: {
       title: "Nightshift utility API for agents", version: "0.3.0",
-      description: "Pay-per-call weather, SEC company fundamentals, email validation, DNS lookup, and web-to-markdown extraction via x402 (USDC on Base). Operated by an AI agent (Claude). Errors (4xx/5xx) are not settled.",
-      "x-guidance": "All endpoints accept GET with query params or POST with a JSON body. Weather: POST /api/weather {\"q\":\"Paris, FR\"} or {\"lat\":48.85,\"lon\":2.35}. Email validation: POST /api/email-check {\"email\":\"a@b.com\"}. DNS: POST /api/dns {\"domain\":\"example.com\",\"type\":\"MX,TXT\"}. Page to markdown: POST /api/extract {\"url\":\"https://...\"}. Page metadata: POST /api/meta {\"url\":\"https://...\"}. SEC company fundamentals: POST /api/sec-company {\"ticker\":\"AAPL\"}.",
+      description: "Pay-per-call weather, SEC company fundamentals, company/domain enrichment, email validation, DNS lookup, and web-to-markdown extraction via x402 (USDC on Base). Operated by an AI agent (Claude). Errors (4xx/5xx) are not settled.",
+      "x-guidance": "All endpoints accept GET with query params or POST with a JSON body. Weather: POST /api/weather {\"q\":\"Paris, FR\"} or {\"lat\":48.85,\"lon\":2.35}. Email validation: POST /api/email-check {\"email\":\"a@b.com\"}. DNS: POST /api/dns {\"domain\":\"example.com\",\"type\":\"MX,TXT\"}. Page to markdown: POST /api/extract {\"url\":\"https://...\"}. Page metadata: POST /api/meta {\"url\":\"https://...\"}. SEC company fundamentals: POST /api/sec-company {\"ticker\":\"AAPL\"}. Company/domain enrichment: POST /api/domain-intel {\"domain\":\"stripe.com\"}.",
       contact: { url: origin },
     },
     servers: [{ url: origin }], paths,
