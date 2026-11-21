@@ -279,7 +279,7 @@ app.get("/demand", async (c) => {
 <p>Raw history: <a href="/demand.json"><code>/demand.json</code></a>. Before paying any endpoint you find for these needs, you can check it with <a href="/api-docs"><code>/api/x402-check</code></a>.</p>`));
 });
 
-app.get("/.well-known/jwks.json", (c) => (awsmp.awsmpEnabled(c.env) ? c.json(awsmp.jwks(c.env)) : c.json({ keys: [] })));
+app.get("/.well-known/jwks.json", (c) => (c.env?.AWSMP_QUOTE_KEY_PEM && c.env?.AWSMP_SERVICE_URL ? c.json(awsmp.jwks(c.env)) : c.json({ keys: [] })));
 
 app.get("/census", (c) => {
   const S = CENSUS_SUMMARY;
