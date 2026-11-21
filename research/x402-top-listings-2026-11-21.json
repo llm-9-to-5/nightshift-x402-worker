@@ -1,0 +1,996 @@
+[
+ {
+  "q": "weather",
+  "buyers": 78,
+  "rows": [
+   {
+    "name": "minia2a Weather",
+    "url": "https://minia2a.uk/x402/weather",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 17,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Web-Production-18A32 — Current Weather",
+    "url": "https://web-production-18a32.up.railway.app/current-weather",
+    "price": 0.001,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 27,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "wallets-demo-seller-server.agent-payments-testing.workers.dev/weather",
+    "url": "https://wallets-demo-seller-server.agent-payments-testing.workers.dev/weather",
+    "price": 0,
+    "status": "verified",
+    "delivered": null,
+    "payers30d": null,
+    "verdict": "do_not_pay",
+    "http": 402,
+    "testnet": true,
+    "problems": [
+     "Base Sepolia (TESTNET): testnet: payment has no real value, likely a demo"
+    ]
+   },
+   {
+    "name": "agentsvc.io/api/v1/proxy/weather",
+    "url": "https://agentsvc.io/api/v1/proxy/weather",
+    "price": 0.002,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 47,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "api.aifoundry.sh/v1/weather",
+    "url": "https://api.aifoundry.sh/v1/weather",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 7,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "real-time stock quotes sub-second latency",
+  "buyers": 16,
+  "rows": [
+   {
+    "name": "x402stock Quote (AAPL example)",
+    "url": "https://x402stock.xyz/api/v1/quote/AAPL",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "market.memoryapi.org/x402/market/arbitrage",
+    "url": "https://market.memoryapi.org/x402/market/arbitrage",
+    "price": 0.001,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 23,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "api.tradesonar.io/v1/markets/:ticker/candles",
+    "url": "https://api.tradesonar.io/v1/markets/:ticker/candles",
+    "price": 0.001,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 7,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Real-time stock quote by ticker",
+    "url": "https://agent-data-tools.revmesh2074.workers.dev/stock/quote?symbol=AAPL",
+    "price": 0.002,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 144,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "kronossignals.com/api/v1/signals/eth",
+    "url": "https://kronossignals.com/api/v1/signals/eth",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": null,
+    "payers30d": 27,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "daily stock screen",
+  "buyers": 13,
+  "rows": [
+   {
+    "name": "Open Claw Stock and Crypto Screener",
+    "url": "https://openclawproductions.com/api/v1/screener?market=stocks&scan=top_gainers",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 4,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "PowaHub Daily Stock Screen",
+    "url": "https://api.powahub.ai/c8a77739168e44a4af26cc954c437460-cd/daily-stock-screen/v1/picks/today",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 11,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402stock Daily Gainers",
+    "url": "https://x402stock.xyz/api/v1/gainers",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402stock Daily Losers",
+    "url": "https://x402stock.xyz/api/v1/losers",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402-stock-indicators.vercel.app/movers",
+    "url": "https://x402-stock-indicators.vercel.app/movers",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "ai stock research",
+  "buyers": 11,
+  "rows": [
+   {
+    "name": "stockbloc.ai.studio/api/data/market",
+    "url": "https://stockbloc.ai.studio/api/data/market",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 10,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "ai_progress_latest — Tokenized Stocks & Agent Data (x402)",
+    "url": "https://x402-accelerometer-feed.fly.dev/ai-progress/latest",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 6,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "news-x402",
+    "url": "https://news-x402.com/news/recent",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": null,
+    "payers30d": 0,
+    "verdict": "caution",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "StableFinance API",
+    "url": "https://stable-financial.vercel.app/api/macro/interest-rates/banks",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 24,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "aiagentoracle.ai/api/v1/tokens",
+    "url": "https://aiagentoracle.ai/api/v1/tokens",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 17,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "stock picks",
+  "buyers": 11,
+  "rows": [
+   {
+    "name": "x402stock Peer Compare",
+    "url": "https://x402stock.xyz/api/v1/compare?tickers=AAPL,MSFT,NVDA",
+    "price": 0.05,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402stock Private Pre-IPO Stocks",
+    "url": "https://x402stock.xyz/api/v1/private-stocks",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "PowaHub Daily Stock Screen",
+    "url": "https://api.powahub.ai/c8a77739168e44a4af26cc954c437460-cd/daily-stock-screen/v1/picks/today",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 11,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "dripstack.com/api/v1/stock-picks",
+    "url": "https://dripstack.com/api/v1/stock-picks",
+    "price": 1.5,
+    "status": "verified",
+    "delivered": null,
+    "payers30d": 8,
+    "verdict": "caution",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "coil.trade/api/board/buylist",
+    "url": "https://coil.trade/api/board/buylist",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 31,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "web search",
+  "buyers": 10,
+  "rows": [
+   {
+    "name": "agentbodega.store/api/web/search",
+    "url": "https://agentbodega.store/api/web/search",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 11,
+    "verdict": "caution",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "win.oneshotagent.com/v1/tools/search",
+    "url": "https://win.oneshotagent.com/v1/tools/search",
+    "price": 0.001,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 91,
+    "verdict": "caution",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "X402 — Web Search",
+    "url": "https://x402.ottoai.services/web-search",
+    "price": 0.009,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 158,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "5108-x402.community.iamstarchild.com/bazaar/web/search",
+    "url": "https://5108-x402.community.iamstarchild.com/bazaar/web/search",
+    "price": 0.015,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 25,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "websearch-brief",
+    "url": "https://api.firstmention.uk/s/websearch/brief",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 4,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "stock research",
+  "buyers": 10,
+  "rows": [
+   {
+    "name": "DopamineDesk Stock and SEC Research",
+    "url": "https://ai-data-marketplace-1042299154756.us-central1.run.app/api/v1/stock_research_brief",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 22,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402stock Ticker Search",
+    "url": "https://x402stock.xyz/api/v1/tickers",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Capminal",
+    "url": "https://www.capminal.ai/api/x402/research",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 14,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Darrylbots — Research Report Standard",
+    "url": "https://darrylbots.com/api/research-report-standard",
+    "price": 0.001,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 3,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "PowaHub Daily Stock Screen",
+    "url": "https://api.powahub.ai/c8a77739168e44a4af26cc954c437460-cd/daily-stock-screen/v1/picks/today",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 11,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "csv preflight",
+  "buyers": 9,
+  "rows": [
+   {
+    "name": "Duet CSV Preflight",
+    "url": "https://duet-csv-preflight.projectlantern-review.workers.dev/v1/preflight",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 3,
+    "verdict": "caution",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "CSV Preflight — Synthetic Structural Quality Report (0.005 Base USDC)",
+    "url": "https://vm5-openapi-x402.onrender.com/v1/csv-report",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 6,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "CSV preflight: validate a CSV before import (delimiter, encoding, header, ragged rows, column types)",
+    "url": "https://api.x402toolshop.com/v1/csv-preflight",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 9,
+    "verdict": "caution",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "CSV Clinic Preflight API",
+    "url": "https://csv-clinic.bakongi.chatgpt.site/api/csv/preflight",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": null,
+    "payers30d": 2,
+    "verdict": "do_not_pay",
+    "http": 200,
+    "testnet": false,
+    "problems": [
+     "returned HTTP 200, not 402"
+    ]
+   },
+   {
+    "name": "ai-data-marketplace-1042299154756.us-central1.run.app/api/v1/transaction_preflight",
+    "url": "https://ai-data-marketplace-1042299154756.us-central1.run.app/api/v1/transaction_preflight",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 22,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "check an x402 endpoint before paying it",
+  "buyers": 13,
+  "rows": [
+   {
+    "name": "Check an x402 Endpoint Before Paying It — SI Sentinel",
+    "url": "https://sentinel-x402-discovery.vercel.app/check",
+    "price": 0.001,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 5,
+    "verdict": "caution",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Check an x402 endpoint before paying it",
+    "url": "https://agent-data-tools.revmesh2074.workers.dev/check/x402-seller?url=https://example.com",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 144,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "app.tenna.ai/api/x402/verifier/x402_endpoint_lint",
+    "url": "https://app.tenna.ai/api/x402/verifier/x402_endpoint_lint",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 5,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402 payment check before you pay: will it settle?",
+    "url": "https://payable.nsgoods.org/payable",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 21,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402-factory.com/v1/ping",
+    "url": "https://x402-factory.com/v1/ping",
+    "price": 0.001,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 51,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "s&p 500 thesis",
+  "buyers": 10,
+  "rows": [
+   {
+    "name": "PowaHub Daily Stock Screen",
+    "url": "https://api.powahub.ai/c8a77739168e44a4af26cc954c437460-cd/daily-stock-screen/v1/picks/today",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 11,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402stock Fear & Greed (stocks)",
+    "url": "https://x402stock.xyz/api/v1/fear-greed",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402stock Point-in-Time Archive",
+    "url": "https://x402stock.xyz/api/v1/archive",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Coil — Board Indices",
+    "url": "https://coil.trade/api/board/indices",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 31,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Finance-Api — Sp500 Index",
+    "url": "https://finance-api.kdlcfa.workers.dev/sp500-index",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": null,
+    "payers30d": 73,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "daily stock picks with thesis",
+  "buyers": 9,
+  "rows": [
+   {
+    "name": "PowaHub Daily Stock Screen",
+    "url": "https://api.powahub.ai/c8a77739168e44a4af26cc954c437460-cd/daily-stock-screen/v1/picks/today",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 11,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402stock Point-in-Time Archive",
+    "url": "https://x402stock.xyz/api/v1/archive",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402stock Daily Gainers",
+    "url": "https://x402stock.xyz/api/v1/gainers",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "x402stock Daily Losers",
+    "url": "https://x402stock.xyz/api/v1/losers",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 35,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Open Claw Stock and Crypto Screener",
+    "url": "https://openclawproductions.com/api/v1/screener?market=stocks&scan=top_gainers",
+    "price": 0.02,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 4,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "email validation mx spf dmarc",
+  "buyers": 7,
+  "rows": [
+   {
+    "name": "Email validation and verification: MX, SPF, DMARC, disposable and role address check before sending",
+    "url": "https://api.x402toolshop.com/v1/email-check?email=jane%40example.com",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 9,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Email validation: MX, SPF, DMARC and deliverability",
+    "url": "https://agent-data-tools.revmesh2074.workers.dev/email/verify?address=test@example.com",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 144,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "B2A Email Deliverability, MX, SPF & DMARC Verifier (email-verify)",
+    "url": "https://email-verify-72343955726.us-central1.run.app/v1/email-verify",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 15,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Email validation: MX, SPF, DMARC and disposable check",
+    "url": "https://agent-data-tools.revmesh2074.workers.dev/pack/email-verify?email=test@example.com",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 144,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "draconic21-x402-api.onrender.com/v1/email_validate",
+    "url": "https://draconic21-x402-api.onrender.com/v1/email_validate",
+    "price": 0.006,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 15,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "sanctions",
+  "buyers": 6,
+  "rows": [
+   {
+    "name": "tools.halowerk.com/v1/sanctions/screen",
+    "url": "https://tools.halowerk.com/v1/sanctions/screen",
+    "price": 0.006,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 58,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "agosint sanctions",
+    "url": "https://agosint.shveik.dev/x402/sanctions",
+    "price": 0.015,
+    "status": "verified",
+    "delivered": null,
+    "payers30d": 28,
+    "verdict": "caution",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "api.strale.io/x402/sanctions-check",
+    "url": "https://api.strale.io/x402/sanctions-check",
+    "price": 0.216,
+    "status": "verified",
+    "delivered": null,
+    "payers30d": 15,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Wallet-Sanctions — Check",
+    "url": "https://wallet-sanctions.use.x402atlas.com/check",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 43,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Canada Sanctions Screening — sanctions_check",
+    "url": "https://ca-sanctions-screen-mcp.donniertf.workers.dev/x402/sanctions_check",
+    "price": 0.1,
+    "status": "verified",
+    "delivered": null,
+    "payers30d": 0,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "funding rates",
+  "buyers": 7,
+  "rows": [
+   {
+    "name": "fundinglens",
+    "url": "https://api.firstmention.uk/s/fundinglens/rates",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 13,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "funding-rates",
+    "url": "https://api.firstmention.uk/s/funding-rates/funding",
+    "price": 0.01,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 6,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "AgentFeed Funding Rate: any USDT perp on Bybit, OKX and Hyperliquid",
+    "url": "https://x402.ochinimus.app/api/funding-rate",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 36,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Multi-Venue Funding Rates — Binance + Bybit + OKX",
+    "url": "https://sentinel-x402-discovery.vercel.app/funding-rates",
+    "price": 0.002,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 5,
+    "verdict": "caution",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "defi-signals.org/defi/funding-rates",
+    "url": "https://defi-signals.org/defi/funding-rates",
+    "price": 0.005,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 19,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ },
+ {
+  "q": "dns mx txt a records domain lookup",
+  "buyers": 6,
+  "rows": [
+   {
+    "name": "ipv4.fr DNS lookup",
+    "url": "https://ipv4.fr/x402/v1/dns/example.com",
+    "price": 0.002,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 4,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Api — Lookup Dns",
+    "url": "https://api.aventtech.com/lookup/dns",
+    "price": 0.002,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 16,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "agentsvc.io/api/v1/proxy/dns-lookup",
+    "url": "https://agentsvc.io/api/v1/proxy/dns-lookup",
+    "price": 0.002,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 47,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "DNS lookup: A, AAAA, MX, TXT, NS, CNAME, CAA, SOA records plus SPF and DMARC email DNS for a domain",
+    "url": "https://api.x402toolshop.com/v1/dns?domain=example.com",
+    "price": 0.003,
+    "status": "verified",
+    "delivered": true,
+    "payers30d": 9,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   },
+   {
+    "name": "Domain DNS Preflight",
+    "url": "https://email-dns-preflight-x402.copper-crate.workers.dev/v1/domain/preflight?domain=example.com",
+    "price": 0.001,
+    "status": "verified",
+    "delivered": null,
+    "payers30d": 4,
+    "verdict": "looks_ok",
+    "http": 402,
+    "testnet": false,
+    "problems": []
+   }
+  ]
+ }
+]
