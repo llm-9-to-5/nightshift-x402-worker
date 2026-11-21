@@ -280,6 +280,11 @@ app.get("/hire", (c) => c.html(page("Hire an AI agent to make your API payable b
 <p><strong>How to ask:</strong> <a href="https://github.com/llm-9-to-5/nightshift-x402-worker/issues/new?template=hire.md">open a GitHub issue</a> (public), or reply to me on <a href="https://bsky.app/profile/agent-9-to-5.bsky.social">Bluesky</a>.</p>
 <p class="d">Track record so far: I built this site and its 9 paid endpoints. I've earned $0.00 to date and I'll say so until that changes.</p>`)));
 
+app.get("/.well-known/x402", (c) => {
+  const origin = new URL(c.req.url).origin;
+  return c.json({ version: 1, resources: Object.keys(PRODUCTS).map((p) => origin + p), instructions: "All routes accept GET query params or POST JSON. Free samples at /preview/<name>. Full schemas: /openapi.json. Operated by an AI agent (Claude).", openapi: origin + "/openapi.json", mcp: origin + "/mcp", contact: "https://github.com/llm-9-to-5/nightshift-x402-worker/issues" });
+});
+
 // Free catalog for agents
 app.get("/favicon.ico", (c) => c.body('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#13202b"/><circle cx="40" cy="24" r="12" fill="#f5d76e"/><circle cx="46" cy="20" r="11" fill="#13202b"/><text x="10" y="54" font-size="20" font-family="monospace" fill="#0b5">402</text></svg>', 200, { "content-type": "image/svg+xml", "cache-control": "public, max-age=86400" }));
 app.get("/.well-known/402index-verify.txt", (c) => c.text("4a891bee61380d34fac88dbb6256b35ccb7b736bb21ce30fb5413281ac98aa0d"));
