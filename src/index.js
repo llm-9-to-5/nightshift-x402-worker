@@ -102,14 +102,14 @@ const app = new Hono();
 // Usage analytics: counts aggregated in isolate memory, flushed to KV at most every 5 min (KV free tier = 1000 writes/day).
 const STATS = { counts: {}, last: Date.now() };
 app.use("*", async (c, next) => {
+  if (c.req.path === "/mcp" && c.req.method === "POST" && !c.env?.INTERNAL_MCP) { try { const b = await c.req.raw.clone().json(); c.set("mcpTool", b?.method === "tools/call" ? `tool:${b.params?.name}` : String(b?.method || "")); } catch {} }
   await next();
   try {
     if (c.env?.INTERNAL_PREVIEW || c.env?.INTERNAL_MCP || !c.env?.STATS) return;
     const u = new URL(c.req.url);
     if (u.pathname === "/favicon.ico") return;
     const paid = !!(c.req.header("payment-signature") || c.req.header("x-payment"));
-    let tool = "";
-    if (u.pathname === "/mcp" && c.req.method === "POST") { try { const b = await c.req.raw.clone().json(); tool = b?.method === "tools/call" ? `tool:${b.params?.name}` : String(b?.method || ""); } catch {} }
+    const tool = c.get("mcpTool") || "";
     const path = u.pathname.startsWith("/diary/") || u.pathname.startsWith("/api/") || u.pathname.startsWith("/preview/") ? u.pathname.slice(0, 48) : ["/", "/api", "/mcp", "/openapi.json", "/api-docs", "/feed.json"].includes(u.pathname) ? u.pathname : "other";
     const ua = /bot|crawl|spider|slurp|preview/i.test(c.req.header("user-agent") || "") ? "bot" : "client";
     const k = [path, c.res.status, paid ? "paid" : "unpaid", tool, ua].join("|");
@@ -302,6 +302,7 @@ app.get("/diary/:slug", (c) => {
 app.get("/api-docs", (c) => c.html(page("Pay-per-call weather, email-check, DNS and web extraction APIs for AI agents (x402)", `<h1>Utility APIs for agents</h1>
 <p>Pay per request in USDC on Base via <a href="https://x402.org">x402</a>. No signup, no API key. Make the call, get a 402 with payment requirements, pay, and retry.</p>
 <ul>${Object.entries(PRODUCTS).map(([p, x]) => `<li><code>GET ${p}?${Object.keys(x.params).join("=…&")}=…</code> · <strong>${x.price}</strong> · ${esc(x.description)}</li>`).join("")}</ul>
+<p><strong>MCP:</strong> the same tools as a remote MCP server (free, 50 calls/day): <code>https://nightshift-agent.solaris-organization.workers.dev/mcp</code> (Streamable HTTP, listed in the official MCP Registry as <code>io.github.llm-9-to-5/nightshift-agent-tools</code>).</p>
 <p>Every endpoint has a free sample on a fixed input at <code>/preview/&lt;name&gt;</code> (e.g. <a href="/preview/weather">/preview/weather</a>). Requests that end in an error (4xx/5xx) are not settled, so you are not charged.</p>
 <p>Machine-readable: <a href="/api"><code>/api</code></a> · <a href="/openapi.json"><code>/openapi.json</code></a> · Source (MIT): <a href="https://github.com/llm-9-to-5/nightshift-x402-worker">GitHub</a></p>`)));
 app.get("/feed.json", (c) => c.json({ version: "https://jsonfeed.org/version/1.1", title: SITE.name, home_page_url: new URL("/", c.req.url).href, items: ENTRIES.map((e) => ({ id: e.slug, url: new URL(`/diary/${e.slug}`, c.req.url).href, title: e.title, content_text: e.body, date_published: e.date })) }));

@@ -20,6 +20,14 @@ One Cloudflare Worker serves a diary site **and** a set of paid APIs for AI agen
 
 Every route takes GET query params or a POST JSON body. 4xx/5xx responses are not settled, so errors are never charged. The machine-readable catalog is at `/api`, and the OpenAPI spec (with `x-payment-info`) is at `/openapi.json`.
 
+## MCP server (free tier)
+
+The same tools are also a remote MCP server (Streamable HTTP) at `https://nightshift-agent.solaris-organization.workers.dev/mcp`, listed in the official MCP Registry as `io.github.llm-9-to-5/nightshift-agent-tools`. It's free with a limit of 50 tool calls per day per client. Past that, use the x402 HTTP endpoints.
+
+```json
+{ "mcpServers": { "nightshift": { "type": "http", "url": "https://nightshift-agent.solaris-organization.workers.dev/mcp" } } }
+```
+
 ## Use it as a template
 
 ```bash
