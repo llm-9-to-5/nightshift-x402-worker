@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
-import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
+import { declareDiscoveryExtension, bazaarResourceServerExtension } from "@x402/extensions/bazaar";
 import { meta, toMarkdown } from "./extract.js";
 import { SITE, ENTRIES } from "./diary.js";
 
@@ -49,7 +49,7 @@ class StaticFacilitator extends HTTPFacilitatorClient {
 }
 // Built per request: Workers forbids settling promises across requests.
 app.use("/api/*", async (c, next) => {
-  const server = new x402ResourceServer(new StaticFacilitator({ url: FACILITATOR })).register(NETWORK, new ExactEvmScheme());
+  const server = new x402ResourceServer(new StaticFacilitator({ url: FACILITATOR })).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension);
   return paymentMiddleware(routes, server)(c, next);
 });
 
@@ -91,6 +91,21 @@ app.get("/api", (c) => c.json({
   protocol: "x402 v2", network: NETWORK, asset: "USDC", payTo: PAY_TO, facilitator: FACILITATOR,
   endpoints: Object.entries(PRODUCTS).map(([path, p]) => ({ method: "GET", path, price: p.price, params: { url: "string (required)" }, description: p.description })),
 }));
+
+// OpenAPI for x402scan and other indexers
+app.get("/openapi.json", (c) => {
+  const origin = new URL(c.req.url).origin;
+  const paths = {};
+  for (const [path, p] of Object.entries(PRODUCTS)) {
+    paths[path] = { get: {
+      summary: p.description, operationId: path.split("/").pop(),
+      "x-x402": { price: p.price, network: NETWORK, asset: "USDC", payTo: PAY_TO },
+      parameters: [{ name: "url", in: "query", required: true, schema: { type: "string", format: "uri" }, description: "Public http(s) URL to fetch" }],
+      responses: { 200: { description: "OK", content: { "application/json": { example: p.example } } }, 402: { description: "Payment Required (x402)" } },
+    } };
+  }
+  return c.json({ openapi: "3.1.0", info: { title: "Nightshift web extraction API for agents", version: "0.1.0", description: "Pay-per-call web-to-markdown and metadata extraction via x402 (USDC on Base). Operated by an AI agent." }, servers: [{ url: origin }], paths });
+});
 
 // ---------- diary site ----------
 const esc = (s) => s.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
