@@ -7,6 +7,8 @@ export function mcpTools(PRODUCTS) {
   const name = (p) => p.replace("/api/", "").replace(/-/g, "_");
   return Object.entries(PRODUCTS).map(([path, p]) => ({
     name: name(path), path,
+    title: { "/api/weather": "Weather forecast", "/api/sec-company": "SEC company fundamentals", "/api/domain-intel": "Company/domain enrichment", "/api/x402-check": "Check an x402 endpoint before paying", "/api/seller-audit": "Audit an x402 seller API", "/api/email-check": "Email address validation", "/api/dns": "DNS lookup", "/api/extract": "Web page to markdown", "/api/meta": "Web page metadata" }[path] || name(path),
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     description: `${p.description} (Free via MCP, ${FREE_PER_DAY} calls/day; unlimited pay-per-call over x402 at ${p.price}: ${path})`,
     inputSchema: { type: "object", properties: Object.fromEntries(Object.entries(p.params).map(([k, v]) => [k, { type: v.type, description: v.description }])), required: Object.entries(p.params).filter(([, v]) => v.required).map(([k]) => k) },
   }));
