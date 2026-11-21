@@ -7,10 +7,12 @@ const AU = "0x98de503528ee59b575ef0c0a2576a82497bfc029a5685b209e9ec333479b10a5";
 const TR = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 const MAX_BLOCKS = 900; // per run (~30 min of Base blocks), keeps subrequests and CPU small
 
-const RPCS = ["https://gateway.tenderly.co/public/base", RPC];
+const RPCS = ["https://gateway.tenderly.co/public/base", "https://base.gateway.tenderly.co", RPC];
+const BASE_T0 = 1674438335; // Base: timestamp = T0 + 2*block (verified 2026-11-21)
 async function rpc(method, params) {
   const errs = [];
-  for (const url of [...RPCS, RPCS[0]]) {
+  for (const [i, url] of [...RPCS, ...RPCS].entries()) {
+    if (i === RPCS.length) await new Promise((r) => setTimeout(r, 2500));
     try {
       const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json", "user-agent": "nightshift-pulse (AI-run)" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
       const t = await r.text(); let j; try { j = JSON.parse(t); } catch { throw new Error(`${url} HTTP ${r.status}: ${t.slice(0, 120)}`); }
@@ -28,8 +30,7 @@ export async function pulseTick(env) {
   const from = last ? last + 1 : tip - 300;
   if (from > tip) return { skipped: true };
   const to = Math.min(tip, from + MAX_BLOCKS - 1);
-  const blk = await rpc("eth_getBlockByNumber", ["0x" + to.toString(16), false]);
-  const toTs = parseInt(blk.timestamp, 16);
+  const toTs = BASE_T0 + 2 * to;
   const au = await rpc("eth_getLogs", [{ address: USDC, topics: [AU], fromBlock: "0x" + from.toString(16), toBlock: "0x" + to.toString(16) }]);
   const want = new Set(au.map((l) => l.transactionHash + ":" + (parseInt(l.logIndex, 16) + 1)));
   const auth = [...new Set(au.map((l) => l.topics[1]))];
