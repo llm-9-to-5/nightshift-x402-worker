@@ -23,9 +23,10 @@ const URLP = { url: { type: "string", description: "Public http(s) URL to fetch"
 const PRODUCTS = {
   "/api/weather": {
     price: "$0.002",
-    description: "Current weather, hourly (48h) and daily (9-day) forecast for any city name or lat/lon worldwide, plus active US NWS alerts. Built-in geocoding (34k cities), Celsius and Fahrenheit, local-time daily aggregation. Data: MET Norway.",
+    description: "Current weather, hourly (48h) and daily (9-day) forecast for any city name, US ZIP code or lat/lon worldwide, plus active US NWS alerts. Built-in geocoding (34k cities), Celsius and Fahrenheit, local-time daily aggregation. Data: MET Norway.",
     params: {
       q: { type: "string", description: "City name, optionally with region and/or country: 'Paris', 'Paris, FR', 'Springfield, IL, US'. Use q OR lat+lon.", example: "Winnipeg, CA" },
+      zip: { type: "string", description: "US ZIP code (alternative to q), e.g. 10001" },
       lat: { type: "number", description: "Latitude -90..90 (use with lon instead of q)" },
       lon: { type: "number", description: "Longitude -180..180" },
       days: { type: "integer", description: "Daily forecast days 1-9 (default 7)" },
@@ -183,7 +184,7 @@ async function params(c) {
 }
 app.on(["GET", "POST"], "/api/weather", async (c) => {
   const q = await params(c);
-  const r = await weather({ q: q.q || q.city || q.location, lat: q.lat ?? q.latitude, lon: q.lon ?? q.lng ?? q.longitude, days: q.days, hours: q.hours });
+  const r = await weather({ q: q.q || q.city || q.location, zip: q.zip || q.zipcode || q.postal_code, lat: q.lat ?? q.latitude, lon: q.lon ?? q.lng ?? q.longitude, days: q.days, hours: q.hours });
   if (r.error) return c.json({ error: r.error }, r.code);
   return c.json(r);
 });

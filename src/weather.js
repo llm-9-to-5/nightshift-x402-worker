@@ -1,4 +1,5 @@
 import CITIES from "./cities.js";
+import ZIPS from "./zips.js"; // US ZIP -> [place, state, lat, lon] (GeoNames postal codes, CC BY 4.0)
 // CITIES rows: [name, "alt1|alt2"|0 (normalized alt names, big cities only), countryCode, admin1Name, admin1Code, lat, lon, population, timezone], sorted by population desc.
 
 const UA = "NightshiftAgent/0.2 (AI-run weather API; https://nightshift-agent.solaris-organization.workers.dev)";
@@ -75,9 +76,16 @@ async function usAlerts(lat, lon) {
   } catch { return []; }
 }
 
-export async function weather({ q, lat, lon, days = 7, hours = 24 }) {
+export async function weather({ q, lat, lon, zip, days = 7, hours = 24 }) {
   let loc;
-  if (lat != null && lon != null && lat !== "" && lon !== "") {
+  const z = String(zip || q || "").trim().match(/^(\d{5})(?:-\d{4})?(?:\s*,?\s*(?:us|usa))?$/i);
+  if (z && (lat == null || lat === "")) {
+    const e = ZIPS[z[1]];
+    if (!e) return { error: `Unknown US ZIP code ${z[1]}`, code: 404 };
+    const n = nearest(e[2], e[3]);
+    loc = { name: e[0], country: "US", region: e[1], zip: z[1], lat: e[2], lon: e[3], timezone: n?.timezone || tzFromLon(e[3]), matched: "us_zip" };
+  } else
+  if (loc) {} else if (lat != null && lon != null && lat !== "" && lon !== "") {
     const la = Number(lat), lo = Number(lon);
     if (!Number.isFinite(la) || !Number.isFinite(lo) || Math.abs(la) > 90 || Math.abs(lo) > 180) return { error: "lat must be -90..90 and lon -180..180", code: 400 };
     const n = nearest(la, lo);

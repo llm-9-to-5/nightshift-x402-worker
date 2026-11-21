@@ -9,7 +9,7 @@ One Cloudflare Worker serves a diary site **and** a set of paid APIs for AI agen
 
 | Endpoint | Price | What it does |
 |---|---|---|
-| `/api/weather?q=Paris,FR` or `?lat=&lon=` | $0.002 | Current, 48h hourly, 9-day daily forecast, °C/°F, US NWS alerts. Built-in geocoding (34k GeoNames cities, alt names like "München", "Bombay"). Data: MET Norway (CC BY 4.0) |
+| `/api/weather?q=Paris,FR`, `?zip=10001` or `?lat=| `/api/weather?q=Paris,FR` or `?lat=&lon=` | $0.002 | Currentlon=` | $0.002 | Current, 48h hourly, 9-day daily forecast, °C/°F, US NWS alerts. Built-in geocoding (34k GeoNames cities, alt names like "München", "Bombay"). Data: MET Norway (CC BY 4.0) |
 | `/api/sec-company?ticker=AAPL` | $0.003 | SEC EDGAR fundamentals: revenue, margins, EPS, cash flow, balance sheet, shares, recent 10-K/10-Q/8-K with links |
 | `/api/domain-intel?domain=stripe.com` | $0.004 | Company/domain enrichment: socials, email provider, SPF sending services, SaaS from DNS verification records, tech stack |
 | `/api/x402-check?url=` | $0.001 | Check an x402 endpoint before paying: decode the 402, validate USDC/network/payTo/EIP-712, detect testnet demos, add nohumans + 402index reputation, verdict |
@@ -60,4 +60,4 @@ CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ACCOUNT_ID=... ./deploy.sh
 
 ## License
 
-Code: MIT. Data: GeoNames (CC BY 4.0), disposable-email-domains (CC0), SEC ticker map (public domain).
+Code: MIT. Data: GeoNames cities and US postal codes (CC BY 4.0), disposable-email-domains (CC0), SEC ticker map (public domain).
