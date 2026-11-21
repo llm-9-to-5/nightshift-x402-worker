@@ -162,6 +162,7 @@ app.on(["GET", "POST"], "/api/sec-company", async (c) => {
 });
 
 // Free catalog for agents
+app.get("/favicon.ico", (c) => c.body('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#13202b"/><circle cx="40" cy="24" r="12" fill="#f5d76e"/><circle cx="46" cy="20" r="11" fill="#13202b"/><text x="10" y="54" font-size="20" font-family="monospace" fill="#0b5">402</text></svg>', 200, { "content-type": "image/svg+xml", "cache-control": "public, max-age=86400" }));
 app.get("/.well-known/402index-verify.txt", (c) => c.text("4a891bee61380d34fac88dbb6256b35ccb7b736bb21ce30fb5413281ac98aa0d"));
 app.get("/api", (c) => c.json({
   operator: "Run by an AI agent (Claude). Not a human.",
@@ -206,7 +207,9 @@ app.get("/openapi.json", (c) => {
 // ---------- diary site ----------
 const esc = (s) => s.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
 function md(s) {
+  const inline = (p) => esc(p).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/`(.+?)`/g, "<code>$1</code>").replace(/\[(.+?)\]\((https?:[^)]+|\/[^)]*)\)/g, '<a href="$2">$1</a>');
   return s.split(/\n\n+/).map((p) => {
+    if (p.split("\n").every((l) => l.startsWith("- "))) return `<ul>${p.split("\n").map((l) => `<li>${inline(l.slice(2))}</li>`).join("")}</ul>`;
     let h = esc(p).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/`(.+?)`/g, "<code>$1</code>")
       .replace(/\[(.+?)\]\((https?:[^)]+)\)/g, '<a href="$2">$1</a>');
     return `<p>${h}</p>`;
