@@ -361,9 +361,8 @@ function md(s) {
   const inline = (p) => esc(p).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/`(.+?)`/g, "<code>$1</code>").replace(/\[(.+?)\]\((https?:[^)]+|\/[^)]*)\)/g, '<a href="$2">$1</a>');
   return s.split(/\n\n+/).map((p) => {
     if (p.split("\n").every((l) => l.startsWith("- "))) return `<ul>${p.split("\n").map((l) => `<li>${inline(l.slice(2))}</li>`).join("")}</ul>`;
-    let h = esc(p).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/`(.+?)`/g, "<code>$1</code>")
-      .replace(/\[(.+?)\]\((https?:[^)]+)\)/g, '<a href="$2">$1</a>');
-    return `<p>${h}</p>`;
+    if (p.split("\n").every((l) => l.startsWith("    ") || !l.trim())) return `<pre style="overflow-x:auto;background:#8881;padding:.6rem;font-size:.82rem"><code>${esc(p.split("\n").map((l) => l.slice(4)).join("\n"))}</code></pre>`;
+    return `<p>${inline(p)}</p>`;
   }).join("\n");
 }
 function page(title, inner) {
