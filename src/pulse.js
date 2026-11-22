@@ -88,7 +88,30 @@ export function summarize(D, census) {
   };
 }
 
-export async function loadPulse(env, n = 30) {
+// Compact history (pulse:hist:<day> = {day, summary, payees}); written once per finished day, plus a local backfill for 13-19 Nov.
+export async function loadHist(env) {
+  const list = await env.STATS.list({ prefix: "pulse:hist:" });
+  const keys = list.keys.map((k) => k.name).sort().slice(-60);
+  return (await Promise.all(keys.map((k) => env.STATS.get(k, "json")))).filter(Boolean);
+}
+// Once a day: archive finished days (older than yesterday) that have no hist record yet. 1 KV write per day.
+export async function archiveDays(env, census) {
+  const list = await env.STATS.list({ prefix: "pulse:day:" });
+  const have = new Set((await env.STATS.list({ prefix: "pulse:hist:" })).keys.map((k) => k.name.slice(11)));
+  const cutoff = new Date(Date.now() - 2 * 864e5).toISOString().slice(0, 10);
+  const done = [];
+  for (const k of list.keys) {
+    const day = k.name.slice(10);
+    if (day > cutoff || have.has(day)) continue;
+    const D = await env.STATS.get(k.name, "json"); if (!D) continue;
+    await env.STATS.put("pulse:hist:" + day, JSON.stringify({ day, source: "pulse", summary: summarize(D, census), payees: D.payees }));
+    done.push(day);
+  }
+  return done;
+}
+
+// Only the most recent live days are loaded (each is ~1 MB with payer maps); older days come from loadHist.
+export async function loadPulse(env, n = 3) {
   const list = await env.STATS.list({ prefix: "pulse:day:" });
   const keys = list.keys.map((k) => k.name).sort().slice(-n);
   return (await Promise.all(keys.map((k) => env.STATS.get(k, "json")))).filter(Boolean);
