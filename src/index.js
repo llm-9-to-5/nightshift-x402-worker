@@ -39,6 +39,7 @@ const CHAT_MODELS = {
   "/api/chat": { "gpt-oss-20b": "@cf/openai/gpt-oss-20b", "llama-3.1-8b": "@cf/meta/llama-3.1-8b-instruct-fast", "mistral-small-3.1": "@cf/mistralai/mistral-small-3.1-24b-instruct" },
   "/api/chat-large": { "gpt-oss-120b": "@cf/openai/gpt-oss-120b", "llama-3.3-70b": "@cf/meta/llama-3.3-70b-instruct-fp8-fast", "qwen2.5-coder-32b": "@cf/qwen/qwen2.5-coder-32b-instruct", "llama-4-scout": "@cf/meta/llama-4-scout-17b-16e-instruct" },
 };
+CHAT_MODELS["/api/v1/chat/completions"] = { "gpt-oss-120b": CHAT_MODELS["/api/chat-large"]["gpt-oss-120b"], ...CHAT_MODELS["/api/chat"], ...CHAT_MODELS["/api/chat-large"] };
 const PRODUCTS = {
   "/api/weather": {
     price: "$0.002",
@@ -125,6 +126,13 @@ const PRODUCTS = {
     description: "LLM chat completion on larger open-weight models: gpt-oss-120b (default), llama-3.3-70b, qwen2.5-coder-32b, llama-4-scout-17b. Send prompt (string) or OpenAI-style messages. Up to 1,500 output tokens and 16k chars of input per call. OpenAI-compatible chat.completion output. Runs on Cloudflare Workers AI. Not charged if the model call fails.",
     params: CHATP("gpt-oss-120b", "llama-3.3-70b, qwen2.5-coder-32b, llama-4-scout"),
     example: { object: "chat.completion", model: "gpt-oss-120b", choices: [{ index: 0, message: { role: "assistant", content: "Base is an Ethereum L2..." }, finish_reason: "stop" }], usage: { prompt_tokens: 20, completion_tokens: 60, total_tokens: 80 } },
+  },
+  "/api/v1/chat/completions": {
+    price: "$0.005",
+    mcp: false,
+    description: "OpenAI-compatible chat completions endpoint (POST JSON {model, messages, max_tokens, temperature}). Point an OpenAI SDK base URL at /api/v1 behind an x402 fetch wrapper. Any of: gpt-oss-120b (default), gpt-oss-20b, llama-3.3-70b, llama-3.1-8b, mistral-small-3.1, qwen2.5-coder-32b, llama-4-scout. Up to 1,500 output tokens, 16k chars input. No streaming. Failed model calls are not charged.",
+    params: CHATP("gpt-oss-120b", "gpt-oss-20b, llama-3.3-70b, llama-3.1-8b, mistral-small-3.1, qwen2.5-coder-32b, llama-4-scout"),
+    example: { object: "chat.completion", model: "gpt-oss-120b", choices: [{ index: 0, message: { role: "assistant", content: "..." }, finish_reason: "stop" }], usage: { prompt_tokens: 20, completion_tokens: 60, total_tokens: 80 } },
   },
 };
 
@@ -224,7 +232,7 @@ app.on(["GET", "POST"], "/api/meta", async (c) => {
   return c.json({ url: g.u.href, finalUrl: g.r.url, status: g.r.status, contentType: g.r.headers.get("content-type"), ...meta(g.text, g.r.url) });
 });
 
-for (const route of ["/api/chat", "/api/chat-large"]) app.on(["GET", "POST"], route, async (c) => {
+for (const route of ["/api/chat", "/api/chat-large", "/api/v1/chat/completions"]) app.on(["GET", "POST"], route, async (c) => {
   const q = await params(c);
   const models = CHAT_MODELS[route]; const names = Object.keys(models);
   const name = q.model ? String(q.model).replace(/^@cf\/[^/]+\//, "") : names[0];
@@ -239,6 +247,7 @@ for (const route of ["/api/chat", "/api/chat-large"]) app.on(["GET", "POST"], ro
   if (!messages.length) return c.json({ error: "messages must be [{role, content:string}]" }, 400);
   const chars = messages.reduce((a, m) => a + m.content.length, 0);
   const maxc = route === "/api/chat" ? 12000 : 16000;
+  if (q.stream === true) return c.json({ error: "stream is not supported; send stream:false" }, 400);
   if (chars > maxc) return c.json({ error: `input too long: ${chars} chars (max ${maxc})` }, 413);
   const max_tokens = Math.max(1, Math.min(1500, parseInt(q.max_tokens ?? 700) || 700));
   const temperature = Math.max(0, Math.min(2, Number(q.temperature ?? 0.6) || 0));
@@ -325,7 +334,7 @@ app.on(["GET", "POST"], "/api/seller-audit", async (c) => {
 });
 
 // Free previews: each paid endpoint run on its fixed example input, so buyers can check output quality before paying.
-app.get("/preview/:name", async (c) => {
+app.get("/preview/:name{.+}", async (c) => {
   const path = "/api/" + c.req.param("name");
   const p = PRODUCTS[path];
   if (!p) return c.json({ error: "unknown endpoint", available: Object.keys(PRODUCTS).map((k) => k.replace("/api/", "/preview/")) }, 404);
