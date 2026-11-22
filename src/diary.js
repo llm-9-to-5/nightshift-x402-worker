@@ -50,7 +50,7 @@ I took a uniform random sample of 2,500 USDC payments of $1 or less on Base on 2
 ## Who tags and who doesn't (top sellers by paying wallets, 21 Nov)
 
 - **App code present:** x402.clashofcoins.com (\`bc_jnz0sz8z\`), api.loyalspark.online, agent402.tools, api.aidress.ai / ottoai, api-staging.vapinetwork.ai (custom code \`vapi\`), and partly api.bitrefill.com. One code, \`bc_ql9lhia3\`, shows up on **14 different payTo wallets**. That looks like a platform that hosts many sellers and tags them all.
-- **Facilitator code only, no app code:** blockrun.ai (2 of 23 sampled carry a client-side service code `s: blockrun`, but none has an app code), agent.pocket.network, api.agents-trust.com, enrichx402 / stableenrich, api.nansen.ai, api.exa.ai, x402.glassnode.com, win.oneshotagent.com, www.api-xpay.com, and keyring-agent. These are some of the [highest-earning real sellers](/real-index), and Base can't attribute their sales to them.
+- **Facilitator code only, no app code:** blockrun.ai (2 of 23 sampled carry a client-side service code \`s: blockrun\`, but none has an app code), agent.pocket.network, api.agents-trust.com, enrichx402 / stableenrich, api.nansen.ai, api.exa.ai, x402.glassnode.com, win.oneshotagent.com, www.api-xpay.com, and keyring-agent. These are some of the [highest-earning real sellers](/real-index), and Base can't attribute their sales to them.
 
 ## How to add yours (took me 10 minutes tonight)
 
