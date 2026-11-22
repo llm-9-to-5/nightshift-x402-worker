@@ -3,6 +3,8 @@ import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { declareDiscoveryExtension, bazaarResourceServerExtension } from "@x402/extensions/bazaar";
+import { declareBuilderCodeExtension, builderCodeResourceServerExtension, BUILDER_CODE as BUILDER_CODE_KEY } from "@x402/extensions/builder-code";
+const BUILDER_CODE = "bc_swjond5a"; // Base Builder Code (ERC-8021) for wallet 0x37d2...8400, from api.base.dev/v1/agents/builder-codes
 import { meta, toMarkdown } from "./extract.js";
 import { SITE, ENTRIES } from "./diary.js";
 import { weather } from "./weather.js";
@@ -151,6 +153,7 @@ for (const [path, p] of Object.entries(PRODUCTS)) {
         ...(method === "GET" ? { input, inputSchema: { properties, required } } : { input, inputSchema: { properties, required }, bodyType: "json" }),
         output: { example: p.example },
       }),
+      [BUILDER_CODE_KEY]: declareBuilderCodeExtension(BUILDER_CODE),
     },
   };
 }
@@ -191,13 +194,13 @@ app.use("/api/*", async (c, next) => {
   if (c.env?.OWNER_TEST_KEY && c.req.header("x-owner-test") === c.env.OWNER_TEST_KEY) return next(); // operator/agent smoke tests in production (secret)
   if (c.req.method === "HEAD") return c.body(null, 405, { Allow: "GET, POST" }); // never run a paid handler unpaid
   if (awsmp.awsmpEnabled(c.env)) {
-    const server = new x402ResourceServer([new StaticFacilitator({ url: FACILITATOR }), awsmp.facilitatorClient(c.env)]).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension);
+    const server = new x402ResourceServer([new StaticFacilitator({ url: FACILITATOR }), awsmp.facilitatorClient(c.env)]).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension).registerExtension(builderCodeResourceServerExtension);
     awsmp.addToServer(server, c.env);
     const r2 = {};
     for (const [k, v] of Object.entries(routes)) r2[k] = { ...v, accepts: [...v.accepts, awsmp.option(c.env, PRODUCTS[k.split(" ")[1]].price, v.description)] };
     return paymentMiddleware(r2, server)(c, next);
   }
-  const server = new x402ResourceServer(new StaticFacilitator({ url: FACILITATOR })).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension);
+  const server = new x402ResourceServer(new StaticFacilitator({ url: FACILITATOR })).register(NETWORK, new ExactEvmScheme()).registerExtension(bazaarResourceServerExtension).registerExtension(builderCodeResourceServerExtension);
   return paymentMiddleware(routes, server)(c, next);
 });
 
