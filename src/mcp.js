@@ -16,6 +16,11 @@ export function mcpTools(PRODUCTS) {
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     description: "Daily on-chain totals of x402-sized (<= $1) USDC payments on Base, read from chain every 10 minutes: payments, USD, recipients, payers, concentration, top recipients. Free. Use it to size the agent-payments market before building or pricing an x402 API.",
     inputSchema: { type: "object", properties: {}, required: [] },
+  }, {
+    name: "x402_seller_leaderboard", path: "/leaderboard.json", get: true, title: "x402 seller leaderboard (by paying wallets, Base)",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    description: "x402 sellers on Base for the latest full UTC day, ranked by distinct paying wallets (not payment count), with returning wallets, exclusive wallets and flags (closed fleet, one payment per wallet, few wallets, repeat buyers). Free. Use it to see which x402 services real agents actually pay, or to find competitors.",
+    inputSchema: { type: "object", properties: {}, required: [] },
   }]);
 }
 

@@ -64,7 +64,7 @@ const PRODUCTS = {
   },
   "/api/x402-revenue": {
     price: "$0.001",
-    description: "Does this x402 seller actually get paid? On-chain revenue for an x402 endpoint or payTo wallet on Base: USDC payments <= $1 over 3 days (72h snapshot), distinct payers, revenue excluding directory test buyers, rank and percentile among 1,987 listed seller wallets. From Nightshift's on-chain census (snapshot date in response).",
+    description: "Does this x402 seller actually get paid? On-chain revenue for an x402 endpoint or payTo wallet on Base: USDC payments <= $1 over 3 days (72h snapshot), distinct payers, revenue excluding directory test buyers, rank and percentile among 1,987 listed seller wallets, PLUS live daily data (paying wallets, returning wallets, rank among all recipients, flags like closed fleet / one payment per wallet). From Nightshift's on-chain census (snapshot date in response).",
     params: { url: { type: "string", description: "x402 endpoint URL (its payTo is read from the 402)", example: "https://blockrun.ai/api/v1/images/generations" }, payTo: { type: "string", description: "Or: the seller's EVM payTo wallet address" } },
     example: { pay_to: "0x8a5d...", in_census: true, payments_le_1usd_3d: 351, usd_received_3d: 16.59, distinct_payers_3d: 23, usd_excl_directory_test_buyers: 16.2, distinct_payers_excl_directory_test_buyers: 20, rank_by_independent_revenue: 22, percentile: 98.9, signal: "many independent payers", census: { snapshot: "2026-11-21", window_days: 30, wallets_in_census: 1987, median_earner_usd: 0.03 } },
   },
@@ -246,6 +246,15 @@ app.on(["GET", "POST"], "/api/x402-revenue", async (c) => {
   const q = await params(c);
   const r = await x402Revenue({ url: q.url, payTo: q.payTo || q.payto || q.wallet });
   if (r.error) return c.json(r, r.code);
+  try {
+    const a = String(r.pay_to || "").toLowerCase();
+    const { days, D, rows } = await lbData(c.env);
+    const me = rows.find((x) => x.payTo === a);
+    r.live = { source: "x402 Pulse leaderboard (latest full UTC day, Base, payments <= $1)", day: D?.day, recipients_that_day: rows.length,
+      ...(me ? { rank_by_paying_wallets: me.rank, paying_wallets: me.payers, returning_wallets: me.returning_payers, exclusive_wallets: me.exclusive_payers, payments: me.payments, usd: me.usd, flags: flags(me) } : { paying_wallets: 0 }),
+      daily: days.filter((d) => d.payees[a]).map((d) => ({ day: d.day, paying_wallets: d.payees[a][2], payments: d.payees[a][0], usd: +d.payees[a][1].toFixed(2) })),
+      page: `${new URL(c.req.url).origin}/seller/${a}` };
+  } catch (e) { r.live = { error: "live data unavailable" }; }
   return c.json(r);
 });
 
