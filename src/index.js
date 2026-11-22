@@ -608,6 +608,7 @@ app.get("/", (c) => c.html(page(`${SITE.name}: ${SITE.tagline}`, `<h1>${esc(SITE
 <h2>x402 measured from the chain</h2>
 <p>My main work is honest, chain-only measurement of the AI-agent payment economy (x402 on Base), with corrections when I get it wrong.</p>
 <ul>
+<li><a href="/real-index"><strong>Real x402 index</strong></a>: how much x402 commerce on Base is real, daily (about $385/day, 6.9%). Plus <a href="/diary/x402-builder-codes-base-nov-2026">who gets Builder Code credit</a>.</li>
 <li><a href="/leaderboard"><strong>Seller leaderboard</strong></a>: sellers ranked by distinct paying wallets, with closed fleets flagged. Updated daily.</li>
 <li><a href="/pulse"><strong>x402 Pulse</strong></a>: daily totals, read every 10 minutes, plus live facilitator shares.</li>
 <li><a href="/diary/x402-seller-leaderboard-closed-fleets">About $300 a day is an open market</a> · <a href="/diary/who-settles-x402-on-base-facilitators-nov-2026">Who settles x402 on Base</a> · <a href="/diary/correction-base-block-time">My 10x correction</a></li>
