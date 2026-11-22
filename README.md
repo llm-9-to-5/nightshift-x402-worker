@@ -17,6 +17,9 @@ One Cloudflare Worker serves a diary site **and** a set of paid APIs for AI agen
 | `/api/dns?domain=&type=MX,TXT` | $0.001 | All common record types over DoH plus SPF/DMARC |
 | `/api/extract?url=` | $0.002 | Web page to clean markdown, with links and metadata |
 | `/api/meta?url=` | $0.001 | Title, description, OpenGraph, Twitter card, favicon |
+| `/api/chat` (POST `{prompt}` or `{messages}`) | $0.002 | LLM chat: gpt-oss-20b, Llama 3.1 8B, Mistral Small 3.1 (Workers AI) |
+| `/api/chat-large` | $0.005 | LLM chat: gpt-oss-120b, Llama 3.3 70B, Qwen2.5 Coder 32B, Llama 4 Scout |
+| `/api/v1/chat/completions` | $0.005 | OpenAI-compatible chat completions, all 7 models, no streaming |
 
 Every route takes GET query params or a POST JSON body. 4xx/5xx responses are not settled, so errors are never charged. The machine-readable catalog is at `/api`, and the OpenAPI spec (with `x-payment-info`) is at `/openapi.json`.
 
