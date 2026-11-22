@@ -1,3 +1,4 @@
+import { FACILITATORS } from "./facilitators.js";
 // x402 Pulse: every 10 min, read new EIP-3009 transferWithAuthorization settlements on Base USDC
 // (AuthorizationUsed event joined to the following Transfer), bucket by UTC day, store in KV.
 // x402-sized = 0 < amount <= $1. Method: /diary/x402-base-24h-flow-nov-2026
@@ -45,10 +46,15 @@ export async function pulseTick(env) {
       const tr = await rpc("eth_getLogs", [{ address: USDC, topics: [TR, auth.slice(i, i + 80)], fromBlock: fb, toBlock: tb }]);
       for (const l of tr) if (want.has(l.transactionHash + ":" + parseInt(l.logIndex, 16))) {
         const b = parseInt(l.blockNumber, 16);
-        rows.push({ b, ts: tsOf(b), from: "0x" + l.topics[1].slice(-40), to: "0x" + l.topics[2].slice(-40), v: Number(BigInt(l.data)) / 1e6 });
+        rows.push({ b, tx: l.transactionHash, ts: tsOf(b), from: "0x" + l.topics[1].slice(-40), to: "0x" + l.topics[2].slice(-40), v: Number(BigInt(l.data)) / 1e6 });
       }
     }
   }
+  // Sample up to 10 settlements per tick: who submitted the tx (the facilitator's relayer). ~1,400/day, uniform over payments.
+  const small = rows.filter((r) => r.v > 0 && r.v <= 1 && r.tx);
+  const sample = [];
+  for (let i = 0; i < Math.min(10, small.length); i++) sample.push(small[Math.floor(Math.random() * small.length)]);
+  const senders = await Promise.all(sample.map((r) => rpc("eth_getTransactionByHash", [r.tx]).then((t) => (t && t.from ? t.from.toLowerCase() : null)).catch(() => null)));
   const days = {};
   const get = async (d) => (days[d] ||= (await env.STATS.get(`pulse:day:${d}`, "json")) || emptyDay(d));
   // make sure every day touched by the block range exists even with no rows
@@ -61,12 +67,28 @@ export async function pulseTick(env) {
     if (!D.payers[r.from]) D.payers[r.from] = {};
     if (!D.payers[r.from][r.to]) { D.payers[r.from][r.to] = 1; p[2]++; }
   }
+  for (let i = 0; i < sample.length; i++) {
+    if (!senders[i]) continue;
+    const D = await get(new Date(sample[i].ts * 1000).toISOString().slice(0, 10));
+    const f = ((D.fac ||= {})[senders[i]] ||= [0, 0, {}]); f[0]++; f[1] += sample[i].v; f[2][sample[i].to] = 1;
+  }
   for (const D of Object.values(days)) {
     D.blocks = [D.blocks[0] ?? from, to];
     await env.STATS.put(`pulse:day:${D.day}`, JSON.stringify(D));
   }
   await env.STATS.put("pulse:last", String(to));
   return { from, to, rows: rows.length };
+}
+
+// Sampled facilitator shares (from D.fac: sender -> [n, usd, {recipients}]). Unlisted senders serving one recipient = self-settled.
+function facSummary(D) {
+  if (!D.fac) return null;
+  const agg = {}; let n = 0, tu = 0;
+  for (const [s, [k, u, rc]] of Object.entries(D.fac)) {
+    const name = FACILITATORS[s] || (Object.keys(rc).length <= 1 ? "unlisted, single recipient (likely self-settled)" : "unlisted, several recipients");
+    const a = (agg[name] ||= { sampled: 0, usd: 0 }); a.sampled += k; a.usd += u; n += k; tu += u;
+  }
+  return { sampled_payments: n, note: "uniform sample of settlements; share = sampled/total", shares: Object.entries(agg).sort((x, y) => y[1].sampled - x[1].sampled).map(([name, a]) => ({ name, share: +(a.sampled / n).toFixed(3), usd_share: tu ? +(a.usd / tu).toFixed(3) : 0 })) };
 }
 
 // Compact summary for pages/JSON. census: { payTo: row } of listed wallets.
@@ -83,6 +105,7 @@ export function summarize(D, census) {
     top10_share: D.usd ? +(top10 / D.usd).toFixed(3) : 0, listed_share: D.usd ? +(listedUsd / D.usd).toFixed(3) : 0,
     recipients_ge1_3payers: payees.filter((p) => p[1][1] >= 1 && p[1][2] >= 3).length,
     over_1usd: { transfers: D.n_big, usd: +D.usd_big.toFixed(2), note: "EIP-3009 transfers above $1, excluded (mostly not x402)" },
+    facilitators: facSummary(D),
     hours: D.hours.map(([n, u]) => [n, +u.toFixed(2)]),
     top: payees.slice(0, 15).map(([a, [n, u, pc]]) => ({ payTo: a, payments: n, usd: +u.toFixed(2), payers: pc, listed_hosts: census[a]?.[5] || null })),
   };
