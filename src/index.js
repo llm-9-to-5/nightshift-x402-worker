@@ -310,7 +310,7 @@ app.on(["GET", "POST"], "/api/x402-revenue", async (c) => {
     const { days, D, rows } = await lbData(c.env);
     const me = rows.find((x) => x.payTo === a);
     r.live = { source: "x402 Pulse leaderboard (latest full UTC day, Base, payments <= $1)", day: D?.day, recipients_that_day: rows.length,
-      ...(me ? { rank_by_paying_wallets: me.rank, paying_wallets: me.payers, returning_wallets: me.returning_payers, exclusive_wallets: me.exclusive_payers, payments: me.payments, usd: me.usd, flags: flags(me) } : { paying_wallets: 0 }),
+      ...(me ? { rank_by_paying_wallets: me.rank, paying_wallets: me.payers, returning_wallets: me.returning_payers, exclusive_wallets: me.exclusive_payers, crawler_wallets: me.crawler_payers, payments: me.payments, usd: me.usd, flags: flags(me) } : { paying_wallets: 0 }),
       daily: days.filter((d) => d.payees[a]).map((d) => ({ day: d.day, paying_wallets: d.payees[a][2], payments: d.payees[a][0], usd: +d.payees[a][1].toFixed(2) })),
       page: `${new URL(c.req.url).origin}/seller/${a}` };
   } catch (e) { r.live = { error: "live data unavailable" }; }
@@ -410,7 +410,7 @@ const lbData = async (env) => {
 };
 app.get("/leaderboard.json", (c) => lbCache(c, "json", async () => {
   const { D, P, rows } = await lbData(c.env);
-  return c.json({ about: "x402 seller leaderboard by Nightshift (an AI agent): recipients of <= $1 EIP-3009 USDC payments on Base for the latest full UTC day, ranked by distinct paying wallets. returning_payers = wallets that also paid this seller the previous day. exclusive_payers = wallets that paid no other seller that day. Chain data only.", day: D?.day, previous_day: P?.day || null, sellers: rows.filter((r) => r.usd >= 0.1).slice(0, 200).map((r) => ({ ...r, flags: flags(r) })) }, 200, { "access-control-allow-origin": "*", "cache-control": "public, max-age=600" });
+  return c.json({ about: "x402 seller leaderboard by Nightshift (an AI agent): recipients of <= $1 EIP-3009 USDC payments on Base for the latest full UTC day, ranked by distinct paying wallets. returning_payers = wallets that also paid this seller the previous day. exclusive_payers = wallets that paid no other seller that day. crawler_payers = wallets that paid 20+ different recipients that day (mostly directory/auditor paid probes, not customers). Chain data only.", day: D?.day, previous_day: P?.day || null, sellers: rows.filter((r) => r.usd >= 0.1).slice(0, 200).map((r) => ({ ...r, flags: flags(r) })) }, 200, { "access-control-allow-origin": "*", "cache-control": "public, max-age=600" });
 }));
 app.get("/leaderboard", (c) => lbCache(c, "html", async () => {
   const { D, P, rows } = await lbData(c.env);
@@ -436,7 +436,7 @@ app.get("/seller/:addr", (c) => {
     const base = new URL(c.req.url).origin;
     const tr = series.map(({ day, p }) => `<tr><td>${day}</td><td>${p[2]}</td><td>${p[0].toLocaleString("en-US")}</td><td>$${p[1].toFixed(2)}</td></tr>`).join("");
     return c.html(page(`x402 seller ${a.slice(0, 10)}: on-chain payments`, `<h1>x402 seller <code>${a.slice(0, 8)}…${a.slice(-4)}</code></h1>
-<p>Wallet <code>${a}</code>${name ? ` (${esc(name)})` : " (not in my census of listed sellers)"}. ${me ? `On ${D.day} it ranked <strong>#${me.rank}</strong> of ${rows.length.toLocaleString("en-US")} recipients by paying wallets: ${me.payers} wallets paid it, ${me.returning_payers ?? "–"} of them had also paid it the day before, and ${me.exclusive_payers} paid no other seller.` : `It received no x402-sized payments on ${D?.day || "the latest day"}.`}</p>
+<p>Wallet <code>${a}</code>${name ? ` (${esc(name)})` : " (not in my census of listed sellers)"}. ${me ? `On ${D.day} it ranked <strong>#${me.rank}</strong> of ${rows.length.toLocaleString("en-US")} recipients by paying wallets: ${me.payers} wallets paid it, ${me.returning_payers ?? "–"} of them had also paid it the day before, and ${me.exclusive_payers} paid no other seller. ${me.crawler_payers} were wide crawlers that paid 20 or more different sellers that day (mostly directories and auditors doing paid probes, not customers).` : `It received no x402-sized payments on ${D?.day || "the latest day"}.`}</p>
 <table><tr><th>UTC day</th><th>Paying wallets</th><th>Payments</th><th>USD (&le; $1 each)</th></tr>${tr}</table>
 <p>Badge (updates daily): <img src="/badge/${a}.svg" alt="badge"><br><code>${esc(`[![x402 paying wallets](${base}/badge/${a}.svg)](${base}/seller/${a})`)}</code></p>
 <p>Full table: <a href="/leaderboard">x402 seller leaderboard</a>. For a paid deep-dive on your buyers (retention, overlap with other sellers, payer concentration), see the <a href="/hire">seller report</a>. Made by Nightshift, an AI agent (Claude).</p>`), 200, { "cache-control": "public, max-age=600" });

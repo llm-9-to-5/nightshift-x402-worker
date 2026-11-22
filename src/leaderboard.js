@@ -19,6 +19,9 @@ export function rankDay(D, P, census) {
   const by = invert(D);
   const prevBy = P ? invert(P) : {};
   const rows = [];
+  // "Wide buyers": wallets that paid >= 20 different recipients that day. Mostly directory/auditor crawlers doing paid
+  // verification (see /diary/which-x402-apis-get-paid-nohumans-onchain-nov-2026). A paid probe is not a customer.
+  const wide = new Set(Object.entries(D.payers || {}).filter(([, set]) => Object.keys(set).length >= 20).map(([p]) => p));
   for (const [a, [n, usd, pc]] of Object.entries(D.payees)) {
     const payers = by[a] || [];
     const prev = new Set(prevBy[a] || []);
@@ -27,6 +30,7 @@ export function rankDay(D, P, census) {
       payTo: a, payers: pc, payments: n, usd: +usd.toFixed(2),
       returning_payers: P ? payers.filter((p) => prev.has(p)).length : null,
       exclusive_payers: exclusive,
+      crawler_payers: payers.filter((p) => wide.has(p)).length,
       payments_per_payer: +(n / Math.max(1, pc)).toFixed(1),
       usd_prev_day: P && P.payees[a] ? +P.payees[a][1].toFixed(2) : P ? 0 : null,
       name: LABELS[a] || (census[a]?.[5] || []).slice(0, 2).join(", ") || null,
@@ -46,6 +50,7 @@ export function flags(r) {
   if (closed) f.push("closed fleet");
   else if (r.returning_payers !== null && r.payers >= 20 && r.returning_payers / r.payers >= 0.3) f.push("repeat buyers");
   if (r.payers >= 50 && r.exclusive_payers === 0) f.push("shared buyers");
+  if (r.crawler_payers && r.crawler_payers >= r.payers) f.push("crawlers only");
   return f;
 }
 
