@@ -25,6 +25,20 @@ const FACILITATOR = "https://facilitator.payai.network";
 const MAX_BYTES = 3_000_000;
 
 const URLP = { url: { type: "string", description: "Public http(s) URL to fetch", required: true, example: "https://example.com" } };
+function CHATP(def, others) {
+  return {
+    prompt: { type: "string", description: "User prompt (use prompt OR messages)", example: "In two sentences, what is the x402 payment protocol?" },
+    messages: { type: "array", description: "OpenAI-style messages [{role:'system'|'user'|'assistant', content:string}] (POST JSON)" },
+    system: { type: "string", description: "Optional system prompt (with prompt)" },
+    model: { type: "string", description: `Model: ${def} (default), ${others}` },
+    max_tokens: { type: "integer", description: "Max output tokens, 1-1500 (default 700)" },
+    temperature: { type: "number", description: "0-2 (default 0.6)" },
+  };
+}
+const CHAT_MODELS = {
+  "/api/chat": { "gpt-oss-20b": "@cf/openai/gpt-oss-20b", "llama-3.1-8b": "@cf/meta/llama-3.1-8b-instruct-fast", "mistral-small-3.1": "@cf/mistralai/mistral-small-3.1-24b-instruct" },
+  "/api/chat-large": { "gpt-oss-120b": "@cf/openai/gpt-oss-120b", "llama-3.3-70b": "@cf/meta/llama-3.3-70b-instruct-fp8-fast", "qwen2.5-coder-32b": "@cf/qwen/qwen2.5-coder-32b-instruct", "llama-4-scout": "@cf/meta/llama-4-scout-17b-16e-instruct" },
+};
 const PRODUCTS = {
   "/api/weather": {
     price: "$0.002",
@@ -97,6 +111,20 @@ const PRODUCTS = {
     description: "Fetch a public URL and return its title, description, canonical URL, OpenGraph and Twitter card tags, favicon, final URL and HTTP status.",
     params: URLP,
     example: { url: "https://example.com", finalUrl: "https://example.com/", status: 200, title: "Example Domain", og: {}, twitter: {}, favicon: "https://example.com/favicon.ico" },
+  },
+  "/api/chat": {
+    price: "$0.002",
+    mcp: false,
+    description: "LLM chat completion on open-weight models: gpt-oss-20b (default), llama-3.1-8b, mistral-small-3.1-24b. Send prompt (string) or OpenAI-style messages. Up to 1,500 output tokens and 12k chars of input per call. Returns an OpenAI-compatible chat.completion. Runs on Cloudflare Workers AI. Not charged if the model call fails.",
+    params: CHATP("gpt-oss-20b", "llama-3.1-8b, mistral-small-3.1"),
+    example: { object: "chat.completion", model: "gpt-oss-20b", choices: [{ index: 0, message: { role: "assistant", content: "Base is an Ethereum L2..." }, finish_reason: "stop" }], usage: { prompt_tokens: 20, completion_tokens: 60, total_tokens: 80 } },
+  },
+  "/api/chat-large": {
+    price: "$0.005",
+    mcp: false,
+    description: "LLM chat completion on larger open-weight models: gpt-oss-120b (default), llama-3.3-70b, qwen2.5-coder-32b, llama-4-scout-17b. Send prompt (string) or OpenAI-style messages. Up to 1,500 output tokens and 16k chars of input per call. OpenAI-compatible chat.completion output. Runs on Cloudflare Workers AI. Not charged if the model call fails.",
+    params: CHATP("gpt-oss-120b", "llama-3.3-70b, qwen2.5-coder-32b, llama-4-scout"),
+    example: { object: "chat.completion", model: "gpt-oss-120b", choices: [{ index: 0, message: { role: "assistant", content: "Base is an Ethereum L2..." }, finish_reason: "stop" }], usage: { prompt_tokens: 20, completion_tokens: 60, total_tokens: 80 } },
   },
 };
 
@@ -194,6 +222,37 @@ app.on(["GET", "POST"], "/api/meta", async (c) => {
   const g = await grab((await params(c)).url);
   if (g.error) return c.json({ error: g.error }, g.code);
   return c.json({ url: g.u.href, finalUrl: g.r.url, status: g.r.status, contentType: g.r.headers.get("content-type"), ...meta(g.text, g.r.url) });
+});
+
+for (const route of ["/api/chat", "/api/chat-large"]) app.on(["GET", "POST"], route, async (c) => {
+  const q = await params(c);
+  const models = CHAT_MODELS[route]; const names = Object.keys(models);
+  const name = q.model ? String(q.model).replace(/^@cf\/[^/]+\//, "") : names[0];
+  const id = models[name] || Object.values(models).find((v) => v.endsWith("/" + name));
+  if (!id) return c.json({ error: `unknown model for ${route}`, models: names }, 400);
+  let messages = Array.isArray(q.messages) ? q.messages : null;
+  if (!messages) {
+    if (!q.prompt || typeof q.prompt !== "string") return c.json({ error: "Provide prompt (string) or messages (array)" }, 400);
+    messages = [...(q.system ? [{ role: "system", content: String(q.system) }] : []), { role: "user", content: q.prompt }];
+  }
+  messages = messages.filter((m) => m && typeof m.content === "string" && ["system", "user", "assistant"].includes(m.role)).map((m) => ({ role: m.role, content: m.content }));
+  if (!messages.length) return c.json({ error: "messages must be [{role, content:string}]" }, 400);
+  const chars = messages.reduce((a, m) => a + m.content.length, 0);
+  const maxc = route === "/api/chat" ? 12000 : 16000;
+  if (chars > maxc) return c.json({ error: `input too long: ${chars} chars (max ${maxc})` }, 413);
+  const max_tokens = Math.max(1, Math.min(1500, parseInt(q.max_tokens ?? 700) || 700));
+  const temperature = Math.max(0, Math.min(2, Number(q.temperature ?? 0.6) || 0));
+  if (!c.env.AI) return c.json({ error: "AI binding missing" }, 503);
+  let r;
+  try { r = await c.env.AI.run(id, { messages, max_tokens, temperature }); }
+  catch (e) { return c.json({ error: "model call failed (you were not charged)", detail: String(e).slice(0, 200) }, 502); }
+  // Normalize: some Workers AI models return {response}, others an OpenAI chat.completion.
+  let content, finish = "stop", usage = r?.usage || null, reasoning;
+  if (r?.choices) { const ch = r.choices[0] || {}; content = ch.message?.content ?? ""; reasoning = ch.message?.reasoning_content ?? ch.message?.reasoning ?? undefined; finish = ch.finish_reason || "stop"; }
+  else { content = typeof r?.response === "string" ? r.response : JSON.stringify(r?.response ?? ""); }
+  if (!content && !reasoning) return c.json({ error: "empty model output (you were not charged)" }, 502);
+  if (usage) usage = { prompt_tokens: usage.prompt_tokens, completion_tokens: usage.completion_tokens, total_tokens: usage.total_tokens };
+  return c.json({ id: "ns-" + crypto.randomUUID(), object: "chat.completion", created: Math.floor(Date.now() / 1000), model: name, provider: "Cloudflare Workers AI (" + id + ")", choices: [{ index: 0, message: { role: "assistant", content, ...(reasoning ? { reasoning } : {}) }, finish_reason: finish }], usage });
 });
 
 async function params(c) {

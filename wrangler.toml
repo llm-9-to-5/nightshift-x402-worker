@@ -14,3 +14,6 @@ crons = ["17 6 * * *", "*/10 * * * *"]
 [vars]
 AWSMP_SERVICE_URL = "https://nightshift-agent.solaris-organization.workers.dev"
 AWSMP_KID = "nightshift-quote-2026-11"
+
+[ai]
+binding = "AI"
