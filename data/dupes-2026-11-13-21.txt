@@ -1,0 +1,12 @@
+pairs with <= 2 payments: 27222 pairs, 29226 payments; identical repeat within 1s: 8 payments (0.03%), $0.22, in 8 pairs (0.03%), sellers 8
+pairs with <= 2 payments: 27222 pairs, 29226 payments; identical repeat within 5s: 49 payments (0.17%), $2.95, in 49 pairs (0.18%), sellers 46
+pairs with <= 2 payments: 27222 pairs, 29226 payments; identical repeat within 30s: 146 payments (0.50%), $10.57, in 146 pairs (0.54%), sellers 126
+pairs with <= 5 payments: 28908 pairs, 35574 payments; identical repeat within 1s: 33 payments (0.09%), $1.58, in 28 pairs (0.10%), sellers 28
+pairs with <= 5 payments: 28908 pairs, 35574 payments; identical repeat within 5s: 322 payments (0.91%), $10.70, in 216 pairs (0.75%), sellers 175
+pairs with <= 5 payments: 28908 pairs, 35574 payments; identical repeat within 30s: 712 payments (2.00%), $37.63, in 480 pairs (1.66%), sellers 332
+pairs with <= 10 payments: 34346 pairs, 80665 payments; identical repeat within 1s: 136 payments (0.17%), $6.16, in 72 pairs (0.21%), sellers 66
+pairs with <= 10 payments: 34346 pairs, 80665 payments; identical repeat within 5s: 1563 payments (1.94%), $34.26, in 492 pairs (1.43%), sellers 360
+pairs with <= 10 payments: 34346 pairs, 80665 payments; identical repeat within 30s: 2619 payments (3.25%), $84.34, in 910 pairs (2.65%), sellers 555
+pairs with <= 30 payments: 37016 pairs, 123815 payments; identical repeat within 1s: 465 payments (0.38%), $10.79, in 155 pairs (0.42%), sellers 119
+pairs with <= 30 payments: 37016 pairs, 123815 payments; identical repeat within 5s: 5196 payments (4.20%), $100.87, in 890 pairs (2.40%), sellers 563
+pairs with <= 30 payments: 37016 pairs, 123815 payments; identical repeat within 30s: 7992 payments (6.45%), $196.11, in 1467 pairs (3.96%), sellers 784
