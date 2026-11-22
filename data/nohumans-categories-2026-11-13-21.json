@@ -1,0 +1,1802 @@
+[
+ {
+  "category": "data.crypto",
+  "listings": 2065,
+  "usd_9d": 2802.77,
+  "usd_per_day": 311.42,
+  "per_listing_9d": 1.357,
+  "listings_earning_any": 247,
+  "listings_wallet_10plus_payers": 43,
+  "distinct_payers": 10046
+ },
+ {
+  "category": "data.other",
+  "listings": 1326,
+  "usd_9d": 1163.69,
+  "usd_per_day": 129.3,
+  "per_listing_9d": 0.878,
+  "listings_earning_any": 203,
+  "listings_wallet_10plus_payers": 19,
+  "distinct_payers": 918
+ },
+ {
+  "category": "data.web",
+  "listings": 1054,
+  "usd_9d": 741.22,
+  "usd_per_day": 82.36,
+  "per_listing_9d": 0.703,
+  "listings_earning_any": 137,
+  "listings_wallet_10plus_payers": 21,
+  "distinct_payers": 974
+ },
+ {
+  "category": "compute.tools",
+  "listings": 613,
+  "usd_9d": 701.02,
+  "usd_per_day": 77.89,
+  "per_listing_9d": 1.144,
+  "listings_earning_any": 75,
+  "listings_wallet_10plus_payers": 9,
+  "distinct_payers": 554
+ },
+ {
+  "category": "data.health",
+  "listings": 39,
+  "usd_9d": 604.66,
+  "usd_per_day": 67.18,
+  "per_listing_9d": 15.504,
+  "listings_earning_any": 2,
+  "listings_wallet_10plus_payers": 1,
+  "distinct_payers": 741
+ },
+ {
+  "category": "data.geo",
+  "listings": 527,
+  "usd_9d": 489.93,
+  "usd_per_day": 54.44,
+  "per_listing_9d": 0.93,
+  "listings_earning_any": 62,
+  "listings_wallet_10plus_payers": 10,
+  "distinct_payers": 792
+ },
+ {
+  "category": "compute.media",
+  "listings": 414,
+  "usd_9d": 457.74,
+  "usd_per_day": 50.86,
+  "per_listing_9d": 1.106,
+  "listings_earning_any": 53,
+  "listings_wallet_10plus_payers": 8,
+  "distinct_payers": 621
+ },
+ {
+  "category": "compute.llm",
+  "listings": 464,
+  "usd_9d": 435.53,
+  "usd_per_day": 48.39,
+  "per_listing_9d": 0.939,
+  "listings_earning_any": 55,
+  "listings_wallet_10plus_payers": 8,
+  "distinct_payers": 797
+ },
+ {
+  "category": "data.social",
+  "listings": 197,
+  "usd_9d": 282.09,
+  "usd_per_day": 31.34,
+  "per_listing_9d": 1.432,
+  "listings_earning_any": 12,
+  "listings_wallet_10plus_payers": 4,
+  "distinct_payers": 312
+ },
+ {
+  "category": "data.news",
+  "listings": 154,
+  "usd_9d": 191.39,
+  "usd_per_day": 21.27,
+  "per_listing_9d": 1.243,
+  "listings_earning_any": 20,
+  "listings_wallet_10plus_payers": 3,
+  "distinct_payers": 459
+ },
+ {
+  "category": "data.misc",
+  "listings": 134,
+  "usd_9d": 170.08,
+  "usd_per_day": 18.9,
+  "per_listing_9d": 1.269,
+  "listings_earning_any": 11,
+  "listings_wallet_10plus_payers": 4,
+  "distinct_payers": 875
+ },
+ {
+  "category": "data.weather",
+  "listings": 351,
+  "usd_9d": 133.62,
+  "usd_per_day": 14.85,
+  "per_listing_9d": 0.381,
+  "listings_earning_any": 24,
+  "listings_wallet_10plus_payers": 5,
+  "distinct_payers": 658
+ },
+ {
+  "category": "infra.inference",
+  "listings": 22,
+  "usd_9d": 125.68,
+  "usd_per_day": 13.96,
+  "per_listing_9d": 5.713,
+  "listings_earning_any": 4,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 301
+ },
+ {
+  "category": "infra.validation",
+  "listings": 134,
+  "usd_9d": 123.76,
+  "usd_per_day": 13.75,
+  "per_listing_9d": 0.924,
+  "listings_earning_any": 18,
+  "listings_wallet_10plus_payers": 2,
+  "distinct_payers": 449
+ },
+ {
+  "category": "data.defi",
+  "listings": 141,
+  "usd_9d": 122.64,
+  "usd_per_day": 13.63,
+  "per_listing_9d": 0.87,
+  "listings_earning_any": 17,
+  "listings_wallet_10plus_payers": 4,
+  "distinct_payers": 8070
+ },
+ {
+  "category": "data.intelligence",
+  "listings": 171,
+  "usd_9d": 84.47,
+  "usd_per_day": 9.39,
+  "per_listing_9d": 0.494,
+  "listings_earning_any": 28,
+  "listings_wallet_10plus_payers": 3,
+  "distinct_payers": 477
+ },
+ {
+  "category": "data.markets",
+  "listings": 511,
+  "usd_9d": 67.84,
+  "usd_per_day": 7.54,
+  "per_listing_9d": 0.133,
+  "listings_earning_any": 55,
+  "listings_wallet_10plus_payers": 11,
+  "distinct_payers": 558
+ },
+ {
+  "category": "data.search",
+  "listings": 118,
+  "usd_9d": 44.05,
+  "usd_per_day": 4.89,
+  "per_listing_9d": 0.373,
+  "listings_earning_any": 11,
+  "listings_wallet_10plus_payers": 3,
+  "distinct_payers": 657
+ },
+ {
+  "category": "data.company",
+  "listings": 92,
+  "usd_9d": 42.62,
+  "usd_per_day": 4.74,
+  "per_listing_9d": 0.463,
+  "listings_earning_any": 10,
+  "listings_wallet_10plus_payers": 1,
+  "distinct_payers": 398
+ },
+ {
+  "category": "data.enrichment",
+  "listings": 31,
+  "usd_9d": 38.69,
+  "usd_per_day": 4.3,
+  "per_listing_9d": 1.248,
+  "listings_earning_any": 5,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 218
+ },
+ {
+  "category": "data.fx",
+  "listings": 279,
+  "usd_9d": 33.85,
+  "usd_per_day": 3.76,
+  "per_listing_9d": 0.121,
+  "listings_earning_any": 25,
+  "listings_wallet_10plus_payers": 6,
+  "distinct_payers": 458
+ },
+ {
+  "category": "tools.verification",
+  "listings": 229,
+  "usd_9d": 31.65,
+  "usd_per_day": 3.52,
+  "per_listing_9d": 0.138,
+  "listings_earning_any": 28,
+  "listings_wallet_10plus_payers": 2,
+  "distinct_payers": 400
+ },
+ {
+  "category": "data.stocks",
+  "listings": 168,
+  "usd_9d": 24.15,
+  "usd_per_day": 2.68,
+  "per_listing_9d": 0.144,
+  "listings_earning_any": 16,
+  "listings_wallet_10plus_payers": 3,
+  "distinct_payers": 519
+ },
+ {
+  "category": "data.security",
+  "listings": 63,
+  "usd_9d": 16.67,
+  "usd_per_day": 1.85,
+  "per_listing_9d": 0.265,
+  "listings_earning_any": 8,
+  "listings_wallet_10plus_payers": 1,
+  "distinct_payers": 328
+ },
+ {
+  "category": "data.macro",
+  "listings": 135,
+  "usd_9d": 16.45,
+  "usd_per_day": 1.83,
+  "per_listing_9d": 0.122,
+  "listings_earning_any": 10,
+  "listings_wallet_10plus_payers": 2,
+  "distinct_payers": 351
+ },
+ {
+  "category": "data.onchain",
+  "listings": 108,
+  "usd_9d": 15.02,
+  "usd_per_day": 1.67,
+  "per_listing_9d": 0.139,
+  "listings_earning_any": 12,
+  "listings_wallet_10plus_payers": 2,
+  "distinct_payers": 416
+ },
+ {
+  "category": "infra.search",
+  "listings": 3,
+  "usd_9d": 10.59,
+  "usd_per_day": 1.18,
+  "per_listing_9d": 3.529,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 1,
+  "distinct_payers": 111
+ },
+ {
+  "category": "infra.scraping",
+  "listings": 36,
+  "usd_9d": 10.42,
+  "usd_per_day": 1.16,
+  "per_listing_9d": 0.289,
+  "listings_earning_any": 6,
+  "listings_wallet_10plus_payers": 1,
+  "distinct_payers": 236
+ },
+ {
+  "category": "data.research",
+  "listings": 45,
+  "usd_9d": 9.0,
+  "usd_per_day": 1.0,
+  "per_listing_9d": 0.2,
+  "listings_earning_any": 3,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 147
+ },
+ {
+  "category": "data.derivatives",
+  "listings": 93,
+  "usd_9d": 8.35,
+  "usd_per_day": 0.93,
+  "per_listing_9d": 0.09,
+  "listings_earning_any": 8,
+  "listings_wallet_10plus_payers": 1,
+  "distinct_payers": 387
+ },
+ {
+  "category": "commerce.giftcards",
+  "listings": 2,
+  "usd_9d": 6.35,
+  "usd_per_day": 0.71,
+  "per_listing_9d": 3.177,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 78
+ },
+ {
+  "category": "data.contacts",
+  "listings": 35,
+  "usd_9d": 5.57,
+  "usd_per_day": 0.62,
+  "per_listing_9d": 0.159,
+  "listings_earning_any": 3,
+  "listings_wallet_10plus_payers": 1,
+  "distinct_payers": 87
+ },
+ {
+  "category": "infra.trust",
+  "listings": 42,
+  "usd_9d": 5.29,
+  "usd_per_day": 0.59,
+  "per_listing_9d": 0.126,
+  "listings_earning_any": 4,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 52
+ },
+ {
+  "category": "data.github",
+  "listings": 52,
+  "usd_9d": 3.58,
+  "usd_per_day": 0.4,
+  "per_listing_9d": 0.069,
+  "listings_earning_any": 3,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 71
+ },
+ {
+  "category": "data.government",
+  "listings": 34,
+  "usd_9d": 3.37,
+  "usd_per_day": 0.37,
+  "per_listing_9d": 0.099,
+  "listings_earning_any": 3,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 114
+ },
+ {
+  "category": "commerce.topups",
+  "listings": 1,
+  "usd_9d": 3.18,
+  "usd_per_day": 0.35,
+  "per_listing_9d": 3.177,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 78
+ },
+ {
+  "category": "infra.discovery",
+  "listings": 36,
+  "usd_9d": 2.65,
+  "usd_per_day": 0.29,
+  "per_listing_9d": 0.073,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 39
+ },
+ {
+  "category": "verification",
+  "listings": 17,
+  "usd_9d": 1.49,
+  "usd_per_day": 0.17,
+  "per_listing_9d": 0.087,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 15
+ },
+ {
+  "category": "infra.compliance",
+  "listings": 14,
+  "usd_9d": 1.49,
+  "usd_per_day": 0.17,
+  "per_listing_9d": 0.106,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 41
+ },
+ {
+  "category": "agents.trust",
+  "listings": 2,
+  "usd_9d": 1.1,
+  "usd_per_day": 0.12,
+  "per_listing_9d": 0.55,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "crypto.token-safety",
+  "listings": 11,
+  "usd_9d": 0.85,
+  "usd_per_day": 0.09,
+  "per_listing_9d": 0.078,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 18
+ },
+ {
+  "category": "data.gaming",
+  "listings": 4,
+  "usd_9d": 0.82,
+  "usd_per_day": 0.09,
+  "per_listing_9d": 0.206,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 39
+ },
+ {
+  "category": "infra.provenance",
+  "listings": 5,
+  "usd_9d": 0.77,
+  "usd_per_day": 0.09,
+  "per_listing_9d": 0.154,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 13
+ },
+ {
+  "category": "security.agent",
+  "listings": 8,
+  "usd_9d": 0.73,
+  "usd_per_day": 0.08,
+  "per_listing_9d": 0.091,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 29
+ },
+ {
+  "category": "data.reference",
+  "listings": 20,
+  "usd_9d": 0.72,
+  "usd_per_day": 0.08,
+  "per_listing_9d": 0.036,
+  "listings_earning_any": 2,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 43
+ },
+ {
+  "category": "data.procurement",
+  "listings": 6,
+  "usd_9d": 0.66,
+  "usd_per_day": 0.07,
+  "per_listing_9d": 0.111,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 11
+ },
+ {
+  "category": "data.time",
+  "listings": 4,
+  "usd_9d": 0.64,
+  "usd_per_day": 0.07,
+  "per_listing_9d": 0.161,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 25
+ },
+ {
+  "category": "search-web",
+  "listings": 1,
+  "usd_9d": 0.62,
+  "usd_per_day": 0.07,
+  "per_listing_9d": 0.619,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 121
+ },
+ {
+  "category": "crypto.onchain",
+  "listings": 1,
+  "usd_9d": 0.62,
+  "usd_per_day": 0.07,
+  "per_listing_9d": 0.619,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 121
+ },
+ {
+  "category": "novelty",
+  "listings": 1,
+  "usd_9d": 0.62,
+  "usd_per_day": 0.07,
+  "per_listing_9d": 0.619,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 121
+ },
+ {
+  "category": "developer.x402-audit",
+  "listings": 35,
+  "usd_9d": 0.56,
+  "usd_per_day": 0.06,
+  "per_listing_9d": 0.016,
+  "listings_earning_any": 2,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 25
+ },
+ {
+  "category": "ai.agents",
+  "listings": 15,
+  "usd_9d": 0.56,
+  "usd_per_day": 0.06,
+  "per_listing_9d": 0.037,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 21
+ },
+ {
+  "category": "developer-tools",
+  "listings": 12,
+  "usd_9d": 0.55,
+  "usd_per_day": 0.06,
+  "per_listing_9d": 0.046,
+  "listings_earning_any": 2,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 17
+ },
+ {
+  "category": "data",
+  "listings": 25,
+  "usd_9d": 0.54,
+  "usd_per_day": 0.06,
+  "per_listing_9d": 0.022,
+  "listings_earning_any": 4,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 8
+ },
+ {
+  "category": "commerce.general",
+  "listings": 16,
+  "usd_9d": 0.52,
+  "usd_per_day": 0.06,
+  "per_listing_9d": 0.032,
+  "listings_earning_any": 3,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 30
+ },
+ {
+  "category": "osint",
+  "listings": 2,
+  "usd_9d": 0.51,
+  "usd_per_day": 0.06,
+  "per_listing_9d": 0.255,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "security.agent-safety",
+  "listings": 17,
+  "usd_9d": 0.49,
+  "usd_per_day": 0.05,
+  "per_listing_9d": 0.029,
+  "listings_earning_any": 3,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 17
+ },
+ {
+  "category": "data.seo",
+  "listings": 9,
+  "usd_9d": 0.49,
+  "usd_per_day": 0.05,
+  "per_listing_9d": 0.055,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 34
+ },
+ {
+  "category": "infra.utility",
+  "listings": 33,
+  "usd_9d": 0.47,
+  "usd_per_day": 0.05,
+  "per_listing_9d": 0.014,
+  "listings_earning_any": 13,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 32
+ },
+ {
+  "category": "data.energy",
+  "listings": 13,
+  "usd_9d": 0.46,
+  "usd_per_day": 0.05,
+  "per_listing_9d": 0.035,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 38
+ },
+ {
+  "category": "crypto",
+  "listings": 4,
+  "usd_9d": 0.39,
+  "usd_per_day": 0.04,
+  "per_listing_9d": 0.097,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 15
+ },
+ {
+  "category": "infra.creative",
+  "listings": 10,
+  "usd_9d": 0.38,
+  "usd_per_day": 0.04,
+  "per_listing_9d": 0.038,
+  "listings_earning_any": 3,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 11
+ },
+ {
+  "category": "crypto.payments",
+  "listings": 4,
+  "usd_9d": 0.37,
+  "usd_per_day": 0.04,
+  "per_listing_9d": 0.093,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 11
+ },
+ {
+  "category": "infra.compute",
+  "listings": 5,
+  "usd_9d": 0.36,
+  "usd_per_day": 0.04,
+  "per_listing_9d": 0.073,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 36
+ },
+ {
+  "category": "crypto.wallet",
+  "listings": 3,
+  "usd_9d": 0.35,
+  "usd_per_day": 0.04,
+  "per_listing_9d": 0.117,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 12
+ },
+ {
+  "category": "crypto.gas",
+  "listings": 2,
+  "usd_9d": 0.35,
+  "usd_per_day": 0.04,
+  "per_listing_9d": 0.176,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 12
+ },
+ {
+  "category": "crypto.market-data",
+  "listings": 2,
+  "usd_9d": 0.33,
+  "usd_per_day": 0.04,
+  "per_listing_9d": 0.166,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 10
+ },
+ {
+  "category": "data.scraping",
+  "listings": 2,
+  "usd_9d": 0.26,
+  "usd_per_day": 0.03,
+  "per_listing_9d": 0.129,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 3
+ },
+ {
+  "category": "ai",
+  "listings": 1,
+  "usd_9d": 0.26,
+  "usd_per_day": 0.03,
+  "per_listing_9d": 0.255,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "data.x402",
+  "listings": 23,
+  "usd_9d": 0.24,
+  "usd_per_day": 0.03,
+  "per_listing_9d": 0.01,
+  "listings_earning_any": 3,
+  "listings_wallet_10plus_payers": 1,
+  "distinct_payers": 40
+ },
+ {
+  "category": "data.domains",
+  "listings": 7,
+  "usd_9d": 0.24,
+  "usd_per_day": 0.03,
+  "per_listing_9d": 0.034,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 26
+ },
+ {
+  "category": "ai.media.video",
+  "listings": 2,
+  "usd_9d": 0.23,
+  "usd_per_day": 0.03,
+  "per_listing_9d": 0.117,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "data.ecommerce",
+  "listings": 2,
+  "usd_9d": 0.21,
+  "usd_per_day": 0.02,
+  "per_listing_9d": 0.104,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 12
+ },
+ {
+  "category": "finance.payments",
+  "listings": 2,
+  "usd_9d": 0.21,
+  "usd_per_day": 0.02,
+  "per_listing_9d": 0.103,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "data.email",
+  "listings": 8,
+  "usd_9d": 0.2,
+  "usd_per_day": 0.02,
+  "per_listing_9d": 0.025,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 18
+ },
+ {
+  "category": "infra.security",
+  "listings": 7,
+  "usd_9d": 0.19,
+  "usd_per_day": 0.02,
+  "per_listing_9d": 0.028,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 133
+ },
+ {
+  "category": "security.prompt-injection",
+  "listings": 5,
+  "usd_9d": 0.19,
+  "usd_per_day": 0.02,
+  "per_listing_9d": 0.038,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 12
+ },
+ {
+  "category": "tools.security",
+  "listings": 3,
+  "usd_9d": 0.19,
+  "usd_per_day": 0.02,
+  "per_listing_9d": 0.063,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 3
+ },
+ {
+  "category": "mcp.discovery",
+  "listings": 3,
+  "usd_9d": 0.17,
+  "usd_per_day": 0.02,
+  "per_listing_9d": 0.056,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 25
+ },
+ {
+  "category": "ai.decision",
+  "listings": 1,
+  "usd_9d": 0.14,
+  "usd_per_day": 0.02,
+  "per_listing_9d": 0.142,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 15
+ },
+ {
+  "category": "infra.payments",
+  "listings": 7,
+  "usd_9d": 0.13,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.019,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 14
+ },
+ {
+  "category": "verification.web",
+  "listings": 5,
+  "usd_9d": 0.13,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.025,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "security.token-safety",
+  "listings": 3,
+  "usd_9d": 0.13,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.043,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 8
+ },
+ {
+  "category": "data.verification",
+  "listings": 7,
+  "usd_9d": 0.12,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.017,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 11
+ },
+ {
+  "category": "ai.media.image",
+  "listings": 1,
+  "usd_9d": 0.12,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.117,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "crypto.security",
+  "listings": 4,
+  "usd_9d": 0.11,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.026,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 6
+ },
+ {
+  "category": "data.risk",
+  "listings": 2,
+  "usd_9d": 0.11,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.054,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 20
+ },
+ {
+  "category": "data.validation",
+  "listings": 5,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.021,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 123
+ },
+ {
+  "category": "data.whois",
+  "listings": 3,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.033,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 15
+ },
+ {
+  "category": "infra.monitoring",
+  "listings": 3,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.034,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "storage.kv",
+  "listings": 2,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.052,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "data.diff",
+  "listings": 2,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.052,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "network.ssl",
+  "listings": 2,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.049,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 15
+ },
+ {
+  "category": "network.dns",
+  "listings": 2,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.051,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "data.holidays",
+  "listings": 1,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.097,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 15
+ },
+ {
+  "category": "security.audit",
+  "listings": 1,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.101,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 3
+ },
+ {
+  "category": "crypto.escrow",
+  "listings": 1,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.101,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 3
+ },
+ {
+  "category": "infra.rpc",
+  "listings": 1,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.103,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "data.flights",
+  "listings": 1,
+  "usd_9d": 0.1,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.103,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "compute.nlp",
+  "listings": 13,
+  "usd_9d": 0.08,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.006,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 144
+ },
+ {
+  "category": "security",
+  "listings": 1,
+  "usd_9d": 0.05,
+  "usd_per_day": 0.01,
+  "per_listing_9d": 0.046,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "data.blockchain",
+  "listings": 7,
+  "usd_9d": 0.04,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.006,
+  "listings_earning_any": 2,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 6
+ },
+ {
+  "category": "data.processing",
+  "listings": 6,
+  "usd_9d": 0.04,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.007,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 23
+ },
+ {
+  "category": "data.carbon",
+  "listings": 1,
+  "usd_9d": 0.04,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.038,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "data.dns",
+  "listings": 11,
+  "usd_9d": 0.03,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.003,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "compute.utility",
+  "listings": 5,
+  "usd_9d": 0.03,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.006,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 34
+ },
+ {
+  "category": "compute.rendering",
+  "listings": 4,
+  "usd_9d": 0.03,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.008,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 120
+ },
+ {
+  "category": "data.places",
+  "listings": 3,
+  "usd_9d": 0.03,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.011,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 8
+ },
+ {
+  "category": "data.content",
+  "listings": 3,
+  "usd_9d": 0.03,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.01,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "data.web-history",
+  "listings": 2,
+  "usd_9d": 0.03,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.013,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "security.recovery",
+  "listings": 1,
+  "usd_9d": 0.03,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.025,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "data.finance",
+  "listings": 9,
+  "usd_9d": 0.02,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.002,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 6
+ },
+ {
+  "category": "Government",
+  "listings": 6,
+  "usd_9d": 0.02,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.003,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "security.secrets",
+  "listings": 2,
+  "usd_9d": 0.02,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.012,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 12
+ },
+ {
+  "category": "data.documents",
+  "listings": 1,
+  "usd_9d": 0.02,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.022,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 11
+ },
+ {
+  "category": "data.market",
+  "listings": 5,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.002,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 16
+ },
+ {
+  "category": "infra.media",
+  "listings": 4,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.002,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "data.equities",
+  "listings": 4,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.003,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 3
+ },
+ {
+  "category": "data.jobs",
+  "listings": 3,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.003,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 3
+ },
+ {
+  "category": "tools.extraction",
+  "listings": 3,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.005,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 3
+ },
+ {
+  "category": "ai.text",
+  "listings": 2,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.007,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 17
+ },
+ {
+  "category": "attestation",
+  "listings": 2,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.005,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 17
+ },
+ {
+  "category": "ai.tools",
+  "listings": 2,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.003,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "infra.web",
+  "listings": 1,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.013,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "marketing.qa",
+  "listings": 1,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.01,
+  "listings_earning_any": 1,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "content.essays",
+  "listings": 1,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.01,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "compute.translation",
+  "listings": 1,
+  "usd_9d": 0.01,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.009,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 8
+ },
+ {
+  "category": "work.bounties",
+  "listings": 5,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "data.compliance",
+  "listings": 4,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "developer.github",
+  "listings": 3,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "image-generation",
+  "listings": 3,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "data.utility",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "data.text",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "blockchain.testnet",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "crypto.token-data",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "crypto.chain",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "search.web",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "data.json",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.002,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 3
+ },
+ {
+  "category": "data.feeds",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "tools.scraping",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "tools.deployment",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "security.payment-verification",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.002,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 5
+ },
+ {
+  "category": "developer-tools.payment-canary",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.002,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 3
+ },
+ {
+  "category": "data.transform",
+  "listings": 2,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "data.reputation",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.005,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 15
+ },
+ {
+  "category": "data.util",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "security.analysis",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.004,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "analytics.reporting",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.004,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "crypto.research",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "crypto.defi-yield",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "crypto.transactions",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "blockchain.gas",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 2
+ },
+ {
+  "category": "data.yaml",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "data.cron",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "data.attestations",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "tools.media",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "tools.defi",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "compliance.kyb.company_registry_lookup",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "coding.docs.generation",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "agent.provider-selection",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "data.media",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "business.revenue-intelligence",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.002,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "business.revenue-recovery",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.002,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "data.music",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "data.bounties",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "data.extraction",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "commerce.remediation",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "agents.marketplace",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "data.b2b",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "blockchain-data/transaction-receipt",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "blockchain-data/wallet-balance",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "blockchain-data/token-price",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "tools/health",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "ai/llm",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "data.business",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "network.whois",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "network.geoip",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "web-data",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.002,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 1
+ },
+ {
+  "category": "compliance",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.0,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 0
+ },
+ {
+  "category": "web",
+  "listings": 1,
+  "usd_9d": 0.0,
+  "usd_per_day": 0.0,
+  "per_listing_9d": 0.001,
+  "listings_earning_any": 0,
+  "listings_wallet_10plus_payers": 0,
+  "distinct_payers": 4
+ }
+]
