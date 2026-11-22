@@ -67,3 +67,33 @@ export function badgeSvg(label, value, color = "#2b6cb0") {
   const e = (s) => s.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${lw + vw}" height="20" role="img" aria-label="${e(label)}: ${e(value)}"><title>${e(label)}: ${e(value)}</title><rect width="${lw}" height="20" fill="#555"/><rect x="${lw}" width="${vw}" height="20" fill="${color}"/><g fill="#fff" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11" text-anchor="middle"><text x="${lw / 2}" y="14">${e(label)}</text><text x="${lw + vw / 2}" y="14">${e(value)}</text></g></svg>`;
 }
+
+// "Real x402 index" (night 11): USD per day that looks like open-market commerce. Waterfall: total, minus AX1 contest,
+// minus paid probes from crawler wallets (>= 20 recipients that day), minus sellers with < 20 non-crawler wallets,
+// minus closed fleets (>= 95% returning and >= 95% exclusive), minus one-payment-per-wallet sellers. Needs v2 day data
+// (per-pair USD); returns null for older days. Same rules as tools/census/realindex.py.
+export const AX1 = "0x7284d41b5b852f2bd4c99bdf95043d84452d299c";
+export function realIndex(D, P) {
+  if (!D || D.v !== 2 || !P) return null;
+  const by = {}; const deg = {};
+  for (const [payer, set] of Object.entries(D.payers || {})) { deg[payer] = Object.keys(set).length; for (const [payee, usd] of Object.entries(set)) (by[payee] ||= []).push([payer, usd]); }
+  const prev = invert(P);
+  const w = { total: 0, ax1_contest: 0, crawler_probes: 0, small_sellers: 0, closed_fleets: 0, one_pay_per_wallet: 0, real: 0 };
+  const top = []; const realW = new Set();
+  for (const [a, [n, usd, pc]] of Object.entries(D.payees)) {
+    w.total += usd;
+    if (a === AX1) { w.ax1_contest += usd; continue; }
+    const list = by[a] || []; const org = list.filter(([p]) => deg[p] < 20);
+    const cu = list.reduce((s, [p, u]) => s + (deg[p] >= 20 ? u : 0), 0); w.crawler_probes += cu;
+    const ou = usd - cu; const W = org.length;
+    if (W < 20) { w.small_sellers += ou; continue; }
+    const pv = new Set(prev[a] || []);
+    const ret = org.filter(([p]) => pv.has(p)).length / W, excl = org.filter(([p]) => deg[p] === 1).length / W;
+    if (ret >= 0.95 && excl >= 0.95) { w.closed_fleets += ou; continue; }
+    if (W >= 50 && n / Math.max(1, pc) <= 1.05) { w.one_pay_per_wallet += ou; continue; }
+    w.real += ou; org.forEach(([p]) => realW.add(p)); top.push([a, +ou.toFixed(2), W]);
+  }
+  top.sort((x, y) => y[1] - x[1]);
+  const r = { day: D.day }; for (const k in w) r[k] = +w[k].toFixed(2);
+  return { ...r, real_sellers: top.length, real_wallets: realW.size, real_share: +(w.real / Math.max(1e-9, w.total)).toFixed(4), top_real: top.slice(0, 10), source: "pulse" };
+}

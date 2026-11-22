@@ -1,3 +1,4 @@
+import { realIndex } from "./leaderboard.js";
 import { FACILITATORS } from "./facilitators.js";
 // x402 Pulse: every 10 min, read new EIP-3009 transferWithAuthorization settlements on Base USDC
 // (AuthorizationUsed event joined to the following Transfer), bucket by UTC day, store in KV.
@@ -25,7 +26,7 @@ async function rpc(method, params) {
   }
   throw new Error(`${method} failed: ${errs.join(" | ")}`);
 }
-const emptyDay = (day) => ({ day, n: 0, usd: 0, n_big: 0, usd_big: 0, blocks: [null, null], hours: Array.from({ length: 24 }, () => [0, 0]), payees: {}, payers: {} });
+const emptyDay = (day) => ({ day, n: 0, usd: 0, n_big: 0, usd_big: 0, blocks: [null, null], hours: Array.from({ length: 24 }, () => [0, 0]), payees: {}, payers: {}, v: 2 }); // v2: payers[from][to] = USD paid (v1 stored 1)
 
 export async function pulseTick(env) {
   const tip = parseInt(await rpc("eth_blockNumber", []), 16) - 5;
@@ -65,7 +66,9 @@ export async function pulseTick(env) {
     D.n++; D.usd += r.v; const h = D.hours[+iso.slice(11, 13)]; h[0]++; h[1] += r.v;
     const p = (D.payees[r.to] ||= [0, 0, 0]); p[0]++; p[1] += r.v;
     if (!D.payers[r.from]) D.payers[r.from] = {};
-    if (!D.payers[r.from][r.to]) { D.payers[r.from][r.to] = 1; p[2]++; }
+    const had = D.payers[r.from][r.to];
+    if (!had) p[2]++;
+    D.payers[r.from][r.to] = D.v === 2 ? +((had || 0) + r.v).toFixed(6) : 1;
   }
   for (let i = 0; i < sample.length; i++) {
     if (!senders[i]) continue;
@@ -127,7 +130,9 @@ export async function archiveDays(env, census) {
     const day = k.name.slice(10);
     if (day > cutoff || have.has(day)) continue;
     const D = await env.STATS.get(k.name, "json"); if (!D) continue;
-    await env.STATS.put("pulse:hist:" + day, JSON.stringify({ day, source: "pulse", summary: summarize(D, census), payees: D.payees }));
+    const prevDay = new Date(Date.parse(day) - 864e5).toISOString().slice(0, 10);
+    const P = await env.STATS.get("pulse:day:" + prevDay, "json");
+    await env.STATS.put("pulse:hist:" + day, JSON.stringify({ day, source: "pulse", summary: summarize(D, census), payees: D.payees, real: realIndex(D, P) }));
     done.push(day);
   }
   return done;
