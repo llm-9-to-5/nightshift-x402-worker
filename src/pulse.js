@@ -1,3 +1,4 @@
+import { parseBuilderCodeSuffixFromCalldata } from "@x402/extensions/builder-code";
 import { realIndex } from "./leaderboard.js";
 import { FACILITATORS } from "./facilitators.js";
 // x402 Pulse: every 10 min, read new EIP-3009 transferWithAuthorization settlements on Base USDC
@@ -55,7 +56,8 @@ export async function pulseTick(env) {
   const small = rows.filter((r) => r.v > 0 && r.v <= 1 && r.tx);
   const sample = [];
   for (let i = 0; i < Math.min(10, small.length); i++) sample.push(small[Math.floor(Math.random() * small.length)]);
-  const senders = await Promise.all(sample.map((r) => rpc("eth_getTransactionByHash", [r.tx]).then((t) => (t && t.from ? t.from.toLowerCase() : null)).catch(() => null)));
+  const txs = await Promise.all(sample.map((r) => rpc("eth_getTransactionByHash", [r.tx]).catch(() => null)));
+  const senders = txs.map((t) => (t && t.from ? t.from.toLowerCase() : null));
   const days = {};
   const get = async (d) => (days[d] ||= (await env.STATS.get(`pulse:day:${d}`, "json")) || emptyDay(d));
   // make sure every day touched by the block range exists even with no rows
@@ -74,6 +76,10 @@ export async function pulseTick(env) {
     if (!senders[i]) continue;
     const D = await get(new Date(sample[i].ts * 1000).toISOString().slice(0, 10));
     const f = ((D.fac ||= {})[senders[i]] ||= [0, 0, {}]); f[0]++; f[1] += sample[i].v; f[2][sample[i].to] = 1;
+    // ERC-8021 builder codes (night 11): D.bc = [sampled, with suffix, with app code, {app code: [n, {payTo:1}]}, {wallet code: n}]
+    let bc = null; try { bc = parseBuilderCodeSuffixFromCalldata(txs[i].input || "0x"); } catch { bc = null; }
+    const B = (D.bc ||= [0, 0, 0, {}, {}]); B[0]++;
+    if (bc) { B[1]++; if (bc.w) B[4][bc.w] = (B[4][bc.w] || 0) + 1; if (bc.a) { B[2]++; const e = (B[3][bc.a] ||= [0, {}]); e[0]++; e[1][sample[i].to] = 1; } }
   }
   for (const D of Object.values(days)) {
     D.blocks = [D.blocks[0] ?? from, to];
@@ -109,6 +115,7 @@ export function summarize(D, census) {
     recipients_ge1_3payers: payees.filter((p) => p[1][1] >= 1 && p[1][2] >= 3).length,
     over_1usd: { transfers: D.n_big, usd: +D.usd_big.toFixed(2), note: "EIP-3009 transfers above $1, excluded (mostly not x402)" },
     facilitators: facSummary(D),
+    builder_codes: D.bc && D.bc[0] >= 50 ? { sampled: D.bc[0], with_suffix_share: +(D.bc[1] / D.bc[0]).toFixed(3), with_app_code_share: +(D.bc[2] / D.bc[0]).toFixed(3), wallet_codes: D.bc[4], top_app_codes: Object.entries(D.bc[3]).sort((a, b) => b[1][0] - a[1][0]).slice(0, 15).map(([code, [n, pt]]) => ({ code, sampled: n, payTo_wallets: Object.keys(pt).length })) } : null,
     hours: D.hours.map(([n, u]) => [n, +u.toFixed(2)]),
     top: payees.slice(0, 15).map(([a, [n, u, pc]]) => ({ payTo: a, payments: n, usd: +u.toFixed(2), payers: pc, listed_hosts: census[a]?.[5] || null })),
   };
