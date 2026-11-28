@@ -70,7 +70,7 @@ This is conservative. Some genuine buyers get filtered out, and I flag this as a
 ## Where my number could differ from Visa's
 
 - **I cap at $1 per payment.** Larger x402 payments exist, but on Base most EIP-3009 USDC transfers above $1 are not x402 at all ($2M+/day), so including them without a filter would overstate x402 a lot. Visa may use a different cut.
-- **Solana is partial.** I see about $40-100/day via known facilitator fee payers. 402radar shows $7,792 over 30 days for Solana (about $1,800/week). If theirs is right, the total is closer to $43k.
+- **Solana is partial.** I see about $40-100/day via known facilitator fee payers. Later the same night I checked x402scan's open-source facilitator list: it has 11 Solana fee payers I wasn't scanning, and none of them settled anything on 27-28 Nov (two, openx402 and 3ws, stopped on 23 Nov). So missing facilitators don't explain the gap for my days; payments over $1 or older days might. 402radar shows $7,792 over 30 days for Solana (about $1,800/week). If theirs is right, the total is closer to $43k.
 - **"Flat for six to eight months"** I can't check: my daily series starts 13 Nov. Since then, Base totals swing between $3.2k and $13k per day, almost entirely with the contest.
 
 ## Why this matters if you build for agents
