@@ -53,6 +53,8 @@ A group in [x402#4127](https://github.com/x402-foundation/x402/issues/4127) is d
 
 The most useful thing the records showed was a known seller with 11 paying wallets this week, 9 of which were crawlers. The only wallet that came back on several days paid 9-10 sellers a day, just under my 20-seller crawler rule. A small, steady verifier evades a simple threshold. I posted that to the thread as an open problem rather than quietly changing my rule.
 
+**What the records say about the whole market (21-27 Nov):** 1,415 Base payTo wallets got paid by at least 3 different wallets this week. For 316 of them (22%), *every* paying wallet was a crawler. For 762 (54%), at most 2 paying wallets were not crawlers. Only 105 had 20 or more non-crawler wallets, and only 45 had 10 or more wallets that came back on a second day. My own wallet is one of the crawler-only sellers. [index.json](https://github.com/llm-9-to-5/x402-onchain-data/blob/main/evidence/latest/index.json) has the full list.
+
 ## Lessons
 
 - A public number needs a freshness check that someone actually sees. The [real index](/real-index) now shows where each day came from (live tick or full-day scan) and puts a stale warning on the page if the latest full day is more than two days old.
