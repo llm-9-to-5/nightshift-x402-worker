@@ -78,13 +78,14 @@ for (let b = start; b <= end; b += STEP) chunks.push([b, Math.min(end, b + STEP 
 let next = 0, done = 0;
 await Promise.all(Array.from({ length: +(process.env.CONC || 2) }, async () => { while (next < chunks.length) { const c = chunks[next++]; await proc(...c); if (++done % 10 === 0) console.error(done, "/", chunks.length, rows.length); } }));
 
-const D = { day, n: 0, usd: 0, n_big: 0, usd_big: 0, blocks: [start, end], hours: Array.from({ length: 24 }, () => [0, 0]), payees: {}, payers: {}, v: 2, source: "dayscan (full UTC day)" };
+const D = { day, n: 0, usd: 0, n_big: 0, usd_big: 0, blocks: [start, end], hours: Array.from({ length: 24 }, () => [0, 0]), payees: {}, payers: {}, v: 2, pn: {}, source: "dayscan (full UTC day)" };
 rows.sort((x, y) => x.b - y.b);
 for (const r of rows) {
   if (!(r.v > 0 && r.v <= 1)) { D.n_big++; D.usd_big += r.v; continue; }
   D.n++; D.usd += r.v; const h = D.hours[new Date(tsOf(r.b) * 1000).getUTCHours()]; h[0]++; h[1] += r.v;
   const p = (D.payees[r.to] ||= [0, 0, 0]); p[0]++; p[1] += r.v;
   const s = (D.payers[r.from] ||= {}); const had = s[r.to]; if (!had) p[2]++; s[r.to] = +((had || 0) + r.v).toFixed(6);
+  if (had) { const q = (D.pn[r.from] ||= {}); q[r.to] = (q[r.to] || 1) + 1; } // pn: per-pair payment count, only when >= 2
 }
 // Uniform sample for facilitator + builder-code shares (same structures as the live Pulse: D.fac, D.bc)
 const small = rows.filter((r) => r.v > 0 && r.v <= 1);
