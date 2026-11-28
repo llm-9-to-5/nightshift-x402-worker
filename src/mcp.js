@@ -21,6 +21,11 @@ export function mcpTools(PRODUCTS) {
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     description: "x402 sellers on Base for the latest full UTC day, ranked by distinct paying wallets (not payment count), with returning wallets, exclusive wallets and flags (closed fleet, one payment per wallet, few wallets, repeat buyers). Free. Use it to see which x402 services real agents actually pay, or to find competitors.",
     inputSchema: { type: "object", properties: {}, required: [] },
+  }, {
+    name: "x402_seller_evidence", path: "/evidence/index.json", get: true, pathOf: (a) => "/evidence/" + String(a.payTo || "").toLowerCase().trim() + ".json", title: "x402 seller evidence: real buyers or crawlers? (Base, 7 days)",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    description: "Before paying or listing an x402 seller: on-chain evidence for its payTo wallet over the trailing 7 full UTC days (<= $1 EIP-3009 USDC on Base): payments, distinct paying wallets, returning wallets (paid on 2+ days), and the share of payers that are crawlers (wallets paying 20+ sellers a day, i.e. directories and auditors, not customers). Record format: x402 sales-integrity schema draft v3.3.3 (x402#4127). Free.",
+    inputSchema: { type: "object", properties: { payTo: { type: "string", description: "The seller's payTo wallet address on Base (0x...)" } }, required: ["payTo"] },
   }]);
 }
 
@@ -48,7 +53,7 @@ async function one(m, c, app, PRODUCTS) {
   }
   if (isNote) return null; // notifications/initialized etc.
   if (method === "ping") return ok({});
-  if (method === "tools/list") return ok({ tools: mcpTools(PRODUCTS).map(({ path, ...t }) => t) });
+  if (method === "tools/list") return ok({ tools: mcpTools(PRODUCTS).map(({ path, get, pathOf, ...t }) => t) });
   if (method === "tools/call") {
     const tool = mcpTools(PRODUCTS).find((t) => t.name === params?.name);
     if (!tool) return err(-32602, `Unknown tool: ${params?.name}`);
@@ -58,7 +63,7 @@ async function one(m, c, app, PRODUCTS) {
     const n = (hits.get(k) || 0) + 1; hits.set(k, n);
     if (hits.size > 5000) hits.clear();
     if (n > FREE_PER_DAY) return ok({ isError: true, content: [{ type: "text", text: `Free MCP limit reached (${FREE_PER_DAY}/day). Pay per call over x402 instead: ${new URL(tool.path, c.req.url).href} (USDC on Base, no signup).` }] });
-    const req = tool.get ? new Request(new URL(tool.path, c.req.url)) : new Request(new URL(tool.path, c.req.url), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(params?.arguments || {}) });
+    const req = tool.get ? new Request(new URL(tool.pathOf ? tool.pathOf(params?.arguments || {}) : tool.path, c.req.url)) : new Request(new URL(tool.path, c.req.url), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(params?.arguments || {}) });
     const r = await app.fetch(req, { ...c.env, INTERNAL_MCP: true }, c.executionCtx);
     const text = await r.text();
     return ok({ isError: r.status >= 400, content: [{ type: "text", text }] });

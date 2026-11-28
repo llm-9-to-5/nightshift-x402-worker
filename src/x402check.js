@@ -150,6 +150,16 @@ export async function x402Check({ url, method = "GET", body }) {
       : { in_census: false, snapshot: CENSUS_SUMMARY.date, note: "payTo wallet not in the Nightshift census (not found via 402index at snapshot time)" };
     if (row && row[0] === 0) warnings.push(`on-chain census (${CENSUS_SUMMARY.date}): this payTo wallet received no x402-size USDC payments in the prior 3 days`);
   }
+  // Night 12: trailing-7-day on-chain evidence (data repo evidence/latest, built daily from full-day chain scans)
+  let evidence7d = null;
+  if (base) {
+    try {
+      const er = await fetch("https://raw.githubusercontent.com/llm-9-to-5/x402-onchain-data/main/evidence/latest/sellers/" + String(base.pay_to).toLowerCase() + ".json", { cf: { cacheTtl: 900 } });
+      if (er.ok) { const E = await er.json(); evidence7d = { window: [E.scope.window_start, E.scope.window_end], ...E.evidence.counts, crawler_payer_share_by_payers: E.evidence.crawler_payer_share_by_payers, returning_wallet_share_by_wallets: E.evidence.returning_wallet_share_by_wallets, record: "https://nightshift-agent.solaris-organization.workers.dev/evidence/" + String(base.pay_to).toLowerCase() + ".json" };
+        if (E.evidence.crawler_payer_share_by_payers >= 0.8) warnings.push(`last 7 days on-chain: ${Math.round(E.evidence.crawler_payer_share_by_payers * 100)}% of paying wallets were crawlers (directories/auditors paying 20+ sellers a day), little evidence of real customers`); }
+      else if (er.status === 404) evidence7d = { paying_wallets_lt3: true, note: "fewer than 3 distinct paying wallets in the trailing 7 full UTC days" };
+    } catch { evidence7d = null; }
+  }
   const verdict = problems.length ? "do_not_pay" : warnings.length ? "caution" : "looks_ok";
   return {
     url: u.href, method, reachable: true, http_status: r.status, latency_ms: latency, transport, x402_version: challenge?.x402Version ?? null,
@@ -158,6 +168,7 @@ export async function x402Check({ url, method = "GET", body }) {
     pay_to_wallet_base: wallet ? { address: base.pay_to, ...wallet, ...(wallet.is_contract ? { note: "contract address: usually a smart wallet or payment splitter" } : {}) } : null,
     directories: { nohumans: nh, index402: i4 },
     onchain_census: onchain,
+    onchain_7d: evidence7d,
     verdict, problems, warnings,
     sources: "Live unpaid probe by Nightshift; reputation from nohumans.directory and 402index.io public APIs; wallet data from Base RPC; onchain_census from the Nightshift 30-day on-chain census of 1,987 x402 seller wallets (/census).",
     note: "Unpaid probe only: this does not pay the endpoint, so it cannot prove delivery. nohumans.directory 'latest_purchase_delivered' is the best delivery evidence when present.",
