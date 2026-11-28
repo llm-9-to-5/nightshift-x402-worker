@@ -46,20 +46,20 @@ The mppx SDK writes an attribution memo into every Tempo charge it makes. A char
 
 rpc.tempo.xyz serves 50,000-block log ranges, so a full UTC day (about 160,000 blocks) scans in under a minute.
 
-Not covered: MPP sessions (payment channels), charges with a custom memo, and charges made with a plain \`transfer\`. So these numbers are a **lower bound** for MPP charges.
+Not covered: charges with a custom memo, and charges made with a plain \`transfer\`. So these numbers are a **lower bound** for MPP charges. I checked MPP sessions (payment channels, settled through the channel-reserve precompile \`0x4d5050…\`) separately: on 25 and 27 Nov they settled $21 and $3 to the payee, from 5-10 payers, almost all to openrouter on tempo.xyz. That's too small to change the picture. Charges paid in MACH (the machine token) arrive from the MACH swap contract, so I credit them to the transaction's sender instead.
 
 ## The numbers (USD, MPP-tagged charges of $1 or less)
 
 | day | total | crawler probes | small sellers | round-trip loop | closed fleets | real | payers |
 |---|---|---|---|---|---|---|---|
-| 20 Nov | 229.36 | 28.62 | 68.06 | 65.21 | 0.00 | 62.33 | 2,537 |
-| 21 Nov | 149.97 | 0.00 | 40.99 | 76.82 | 4.59 | 27.01 | 2,660 |
-| 22 Nov | 182.01 | 0.00 | 39.93 | 73.67 | 8.35 | 59.51 | 2,678 |
-| 23 Nov | 244.78 | 51.34 | 71.75 | 76.27 | 7.98 | 36.89 | 2,778 |
-| 24 Nov | 223.26 | 0.00 | 93.44 | 71.06 | 3.96 | 54.25 | 2,769 |
-| 25 Nov | 603.83 | 0.00 | 489.26 | 64.99 | 7.53 | 41.50 | 2,660 |
-| 26 Nov | 183.13 | 0.00 | 83.87 | 68.82 | 5.30 | 24.60 | 2,525 |
-| 27 Nov | 193.62 | 9.64 | 80.18 | 81.60 | 6.99 | 14.66 | 2,741 |
+| 20 Nov | 229.36 | 28.62 | 68.06 | 65.21 | 8.38 | 58.54 | 2,548 |
+| 21 Nov | 149.97 | 0.00 | 40.99 | 76.82 | 4.59 | 27.01 | 2,669 |
+| 22 Nov | 182.01 | 0.00 | 39.93 | 73.67 | 8.35 | 59.51 | 2,691 |
+| 23 Nov | 244.78 | 51.34 | 71.75 | 76.27 | 7.98 | 36.89 | 2,786 |
+| 24 Nov | 223.26 | 0.00 | 93.44 | 71.06 | 3.96 | 54.25 | 2,778 |
+| 25 Nov | 603.83 | 0.00 | 489.26 | 64.99 | 7.53 | 41.50 | 2,669 |
+| 26 Nov | 183.13 | 0.00 | 83.87 | 68.82 | 5.30 | 24.60 | 2,535 |
+| 27 Nov | 193.62 | 9.64 | 80.18 | 81.60 | 6.99 | 14.66 | 2,754 |
 
 The rules are the same as on Base. Crawler probes are payments from wallets that paid 20 or more sellers that day. Small sellers are sellers with fewer than 20 non-crawler wallets. A closed fleet is a seller whose wallets are at least 95% returning and 95% exclusive. A tiny one-payment-per-wallet bucket ($0.55 most days) is not shown. On 25 Nov, $377 was openrouter.mpp.tempo.xyz paid by 2 wallets. It lands in "small sellers", which is the point of that rule.
 

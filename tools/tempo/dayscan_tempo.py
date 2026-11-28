@@ -19,6 +19,8 @@ TOKENS = {
     "0x20c0000000000000000000000000000000000000": "pathUSD",
 }
 CHUNK = 20000
+# mppx MACH (machine token) route: the swap contract transfers to the payee, so the payer is the tx sender.
+SWAPS = {"0xf72e5107c32c655ffa7539a3c8e97b7c3ce16a3f"}
 
 
 def rpc(method, params, tries=6):
@@ -89,6 +91,13 @@ def main():
             })
         a = b + 1
         print(f"{day} {a-start}/{end-start+1} rows={len(rows)}", file=sys.stderr)
+    from concurrent.futures import ThreadPoolExecutor
+    via = [r for r in rows if r["from"] in SWAPS]
+    txs = sorted({r["tx"] for r in via})
+    with ThreadPoolExecutor(8) as ex:
+        senders = dict(zip(txs, ex.map(lambda h: rpc("eth_getTransactionByHash", [h])["from"].lower(), txs)))
+    for r in via:
+        r["via"] = r["from"]; r["from"] = senders[r["tx"]]
     json.dump({"day": day, "blocks": [start, end], "mpp": rows, "non_mpp_memo_transfers": other}, open(out, "w"))
     print(out, len(rows), other)
 
