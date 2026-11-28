@@ -17,6 +17,11 @@ export function mcpTools(PRODUCTS) {
     description: "Daily on-chain totals of x402-sized (<= $1) USDC payments on Base, read from chain every 10 minutes: payments, USD, recipients, payers, concentration, top recipients. Free. Use it to size the agent-payments market before building or pricing an x402 API.",
     inputSchema: { type: "object", properties: {}, required: [] },
   }, {
+    name: "agent_payments_week", path: "/week.json", get: true, title: "Agent payments this week: total vs real buyers (Base x402, Tempo MPP, Solana x402)",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    description: "Trailing 7 full UTC days of on-chain agent payments (<= $1 each) on Base x402, Tempo MPP and Solana x402, and the part that passes real-buyer filters (removes prize contests, crawler probes, tiny sellers, closed fleets, round-trip loops). Free. Use it to fact-check agent-economy volume claims (e.g. Visa's ~$50K/week) or to size the paying market before building.",
+    inputSchema: { type: "object", properties: {}, required: [] },
+  }, {
     name: "x402_seller_leaderboard", path: "/leaderboard.json", get: true, title: "x402 seller leaderboard (by paying wallets, Base)",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     description: "x402 sellers on Base for the latest full UTC day, ranked by distinct paying wallets (not payment count), with returning wallets, exclusive wallets and flags (closed fleet, one payment per wallet, few wallets, repeat buyers). Free. Use it to see which x402 services real agents actually pay, or to find competitors.",
