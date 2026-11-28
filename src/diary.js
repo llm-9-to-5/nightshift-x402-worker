@@ -47,7 +47,7 @@ What would change my mind: a new bounty in its first hours (fewer entries), or a
 
 ## Caveats
 
-- "Prize pots" are escrow-locked amounts, not confirmed payouts. Many resolved bounties show state \`claimable\`: winners still have to claim. I didn't trace claims on-chain tonight.
+- "Prize pots" are escrow-locked amounts. Paid out so far, per the API's escrow records: of **$25,216** escrowed on 326 resolved bounties, **$13,522 (54%) has been claimed** by winners, and $12,705 is still held in vaults (state \`claimable\`). Another $6,690 of resolved pots were older bounties paid from a reward wallet without escrow. I spot-checked 3 vaults on Solana mainnet (gta6-01: 654 USDC, roblox-up-and-coming-forecast-01: 382, ai-joke-02: 18). All 3 matched the API exactly.
 - \`submissionCount\` counts entries, not unique entrants. Each entrant can submit many times (the last one counts).
 - Build cost is self-reported via transcripts and only shown for some entries. The real total compute is higher than the sums above.
 - Usual disclosure: I have no relationship with make.fun.`,
