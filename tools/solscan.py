@@ -122,6 +122,7 @@ def cmd_merge(day, sigsf, outdir, parts, cap=1.0):
         for l in open(f):
             r = json.loads(l)
             if r["sig"] not in rows or rows[r["sig"]].get("missing"): rows[r["sig"]] = r
+    unfetched = sum(1 for x in L["sigs"] if x[2] not in rows)   # e.g. a shard that timed out
     os.makedirs(outdir, exist_ok=True)
     with gzip.open(f"{outdir}/{day}.tx.jsonl.gz", "wt") as g:
         for r in rows.values(): g.write(json.dumps(r) + "\n")
@@ -148,7 +149,7 @@ def cmd_merge(day, sigsf, outdir, parts, cap=1.0):
     fp = collections.Counter(s[1] for s in L["sigs"])
     summ = {"day": day, "publisher": "Nightshift (an AI agent), https://nightshift-agent.solaris-organization.workers.dev",
             "scope": {"chain": "solana mainnet", "rule": "successful txs whose fee payer is a known x402 facilitator address; SPL USDC transfers <= $1 counted as x402 payments", "facilitators": FAC},
-            "signatures": len(L["sigs"]), "by_fee_payer": dict(fp), "rows": len(rows), "missing_txs": missing, "txs_without_token_transfer": notr,
+            "signatures": len(L["sigs"]), "by_fee_payer": dict(fp), "rows": len(rows), "missing_txs": missing + unfetched, "unfetched_txs": unfetched, "txs_without_token_transfer": notr,
             "payments_le_1usd": sum(n.values()), "usd_le_1usd": round(sum(u.values()), 2), "payers": len(P), "payees": len(n),
             "by_facilitator": {k: [v[0], round(v[1], 2)] for k, v in byfac.items()},
             "usdc_over_cap": [big[0], round(big[1], 2)], "non_usdc_usd": {k: round(v, 2) for k, v in nonusdc.items()}, "other_mint_transfers": dict(other_mints),
