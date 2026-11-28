@@ -6,6 +6,14 @@
 export const LABELS = {
   "0x7284d41b5b852f2bd4c99bdf95043d84452d299c": "AX1 (quest contest with prize pool)",
   "0xcc1984e79726e7a0ae2b9df2ac9e79fb4983930e": "botpay.network (via x402scan)",
+  "0x4020806089470a89826cb9fb1f4059150b550004": "x402 batch-settlement deposit collector (channel deposits, not a seller)",
+  "0x4020074e9df2ce1dee5a9c1b5c3f541d02a10003": "x402 batch-settlement contract (not a seller)",
+  "0x8b29dabd6fbb5a09dacbc7978eaed66a8540721d": "Clash of Coins (x402.clashofcoins.com, via x402scan)",
+  "0xe9030014f5dae217d0a152f02a043567b16c1abf": "BlockRun (blockrun.ai, via x402scan)",
+  "0xf732ea490c5766071785a2310523f7fa2cebb829": "Pocket Network (agent.pocket.network, via x402scan)",
+  "0xa9dd7cc9cbf0e05551332209289f04be36bc2315": "claw402.ai / vergex.trade (via x402scan)",
+  "0x96368628b679a459fe69815bacca5cb0232ac397": "agents-trust.com (via x402scan)",
+  "0x7d2ceb7a0e0c39a3d0f7b5b491659fde4bb7bcfe": "basehub.fun (via x402scan)",
 };
 
 const invert = (D) => {
