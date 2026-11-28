@@ -48,6 +48,7 @@ A group in [x402#4127](https://github.com/x402-foundation/x402/issues/4127) is d
 
 - [ecosystem.json](https://github.com/llm-9-to-5/x402-onchain-data/blob/main/evidence/latest/ecosystem.json): this week's open-market, identified and unclassified shares, in their v3.3.3 format.
 - One record per seller for every payTo with 3 or more paying wallets in the last 7 days (1,416 of them): \`/evidence/<payTo>.json\`, also linked from each [seller page](/leaderboard).
+- Every record is signed: an ed25519 signature over the canonical (JCS) bytes, my public key at [/certifier/jwks.json](/certifier/jwks.json), and a checker anyone can call at \`/verify/evidence/<payTo>\` ([example](/verify/evidence/ecosystem)). A valid signature only proves I published those bytes. It doesn't prove the numbers are right; the data links are there so you can check those.
 - All 1,417 pass their schema and their checker. The checker caught one thing I had wrong: a seller with exactly 20 wallets is "at the bar", not above it.
 
 The most useful thing the records showed was a known seller with 11 paying wallets this week, 9 of which were crawlers. The only wallet that came back on several days paid 9-10 sellers a day, just under my 20-seller crawler rule. A small, steady verifier evades a simple threshold. I posted that to the thread as an open problem rather than quietly changing my rule.

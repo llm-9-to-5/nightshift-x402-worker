@@ -488,9 +488,14 @@ app.get("/verify/evidence/:id", async (c) => {
   const id = c.req.param("id").toLowerCase();
   if (id !== "ecosystem" && !/^0x[0-9a-f]{40}$/.test(id)) return c.json({ error: "use /verify/evidence/<payTo> or /verify/evidence/ecosystem" }, 400);
   const base = EVID + (id === "ecosystem" ? "ecosystem" : "sellers/" + id);
-  const [rr, sr] = await Promise.all([fetch(base + ".json", { cf: { cacheTtl: 900 } }), fetch(base + ".sig.json", { cf: { cacheTtl: 900 } })]);
+  const get2 = (q, ttl) => Promise.all([fetch(base + ".json?" + q, { cf: { cacheTtl: ttl } }), fetch(base + ".sig.json?" + q, { cf: { cacheTtl: ttl } })]);
+  let [rr, sr] = await get2("m=" + Math.floor(Date.now() / 3e5), 300);
   if (!rr.ok || !sr.ok) return c.json({ id, valid: false, error: `record ${rr.status}, signature ${sr.status}` }, 404, { "access-control-allow-origin": "*" });
-  const rec = await rr.json(), sig = await sr.json();
+  let rec = await rr.json(), sig = await sr.json();
+  if (sig.payload_sha256 !== "sha256:" + rec.verification?.payload_sha256) { // cache skew right after the daily update: refetch both uncached
+    [rr, sr] = await get2("r=" + Date.now() + Math.random(), 0);
+    if (rr.ok && sr.ok) { rec = await rr.json(); sig = await sr.json(); }
+  }
   const claimed = rec.verification?.payload_sha256; const payload = { ...rec }; delete payload.verification;
   const bytes = new TextEncoder().encode(jcs(payload));
   const h = [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))].map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -503,9 +508,9 @@ app.get("/verify/evidence/:id", async (c) => {
 app.get("/evidence/:file", async (c) => {
   const f = c.req.param("file").toLowerCase().replace(/\.json$/, "");
   const cors = { "access-control-allow-origin": "*", "cache-control": "public, max-age=1800" };
-  if (f === "index" || f === "ecosystem") { const r = await fetch(EVID + f + ".json", { cf: { cacheTtl: 900 } }); return new Response(r.body, { status: r.status, headers: { ...cors, "content-type": "application/json" } }); }
+  if (f === "index" || f === "ecosystem") { const r = await fetch(EVID + f + ".json?m=" + Math.floor(Date.now() / 3e5), { cf: { cacheTtl: 300 } }); return new Response(r.body, { status: r.status, headers: { ...cors, "content-type": "application/json" } }); }
   if (!/^0x[0-9a-f]{40}$/.test(f)) return c.json({ error: "use /evidence/<payTo address>.json, /evidence/index.json or /evidence/ecosystem.json" }, 400);
-  const r = await fetch(EVID + "sellers/" + f + ".json", { cf: { cacheTtl: 900 } });
+  const r = await fetch(EVID + "sellers/" + f + ".json?m=" + Math.floor(Date.now() / 3e5), { cf: { cacheTtl: 300 } });
   if (r.status === 404) return c.json({ payTo: f, error: "no record: fewer than 3 distinct paying wallets in the trailing 7 full UTC days (<= $1 EIP-3009 USDC on Base), or not an x402 recipient", index: "/evidence/index.json" }, 404, cors);
   return new Response(r.body, { status: r.status, headers: { ...cors, "content-type": "application/json" } });
 });
