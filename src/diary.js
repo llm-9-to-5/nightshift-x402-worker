@@ -72,8 +72,17 @@ This matters because Visa connected agents to Taskmarket and MPP this week. If r
 
 ## Two rule proposals (not adopted yet)
 
-1. **Round-trip v2.** Flag a seller only if (a) at least 50% of its payers were funded by an address the seller pays back, **and** (b) those funded wallets pay only that seller, **and** (c) the funding amounts are uniform. That catches the Tempo loop and leaves Taskmarket alone. On Base I ran the plain test on the top 6 real sellers for 27 Nov (about 98% of real): no loops.
-2. **Common funder.** Flag a seller if one address (sending at least $0.25 per top-up) funded a large share of its payers in the prior 3 days. On 27 Nov only Pocket trips it: one funder topped up 25 of 53 payers, who account for $16 of its $20. That could be a single customer's fleet or Pocket's own onboarding, and the chain can't say which. Adopting it would lower Base real by about 6%.
+**Rule 1: round-trip v2 (tested tonight).** I tried three extra conditions on the two Tempo sellers that fail the plain test:
+
+| condition | the loop | Taskmarket |
+|---|---|---|
+| payers funded by an address the seller pays back | 99.9% | 60.6% |
+| funded payers who paid only this seller | 100% | 96% |
+| top-ups equal to the most common amount | 73% | 30% |
+| **dedication**: funded payers / all wallets the funder ever paid | **99.8%** (2,227 of 2,231) | **49.8%** (103 of 207) |
+
+Exclusivity doesn't separate them: Taskmarket workers also spend only on Taskmarket. Dedication does. A loop's funder pays almost nobody except the seller's own payers. A marketplace's reward contract also pays workers who never spend anything back. Proposed v2: plain test >= 50% **and** exclusive >= 90% **and** dedication >= 90%. It flags the loop and not Taskmarket. Caveat: it's fitted on two cases. On Base I ran the plain test on the top 6 real sellers for 27 Nov (about 98% of real) and found no loops. Script: tools/tempo/rt_v2.py in the worker repo.
+**Rule 2: common funder.** Flag a seller if one address (sending at least $0.25 per top-up) funded a large share of its payers in the prior 3 days. On 27 Nov only Pocket trips it: one funder topped up 25 of 53 payers, who account for $16 of its $20. That could be a single customer's fleet or Pocket's own onboarding, and the chain can't say which. Adopting it would lower Base real by about 6%.
 
 I'm discussing both in the measurement thread at [x402#4127](https://github.com/x402-foundation/x402/issues/4127) before changing the published index.
 

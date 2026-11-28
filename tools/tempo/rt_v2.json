@@ -1,0 +1,24 @@
+{
+ "0x3c0820e2dabd5feae1fd03b78079dee15c7f83d8": {
+  "funded_share": 0.606,
+  "funded": 103,
+  "exclusive": 0.961,
+  "modal_total": 0.2,
+  "uniform": 0.298,
+  "loop_v2": false,
+  "funder_recipients": 207,
+  "dedication": 0.498,
+  "rule": "v2: funded_share>=0.5 AND exclusive>=0.9 AND dedication (funded payers / all wallets the funder paid) >=0.9; window 14d before 20 Nov to 28 Nov"
+ },
+ "0x66fa4d79ca84016b42352be33c908dd812952ec8": {
+  "funded_share": 0.999,
+  "funded": 2227,
+  "exclusive": 1.0,
+  "modal_total": 0.2,
+  "uniform": 0.728,
+  "loop_v2": true,
+  "funder_recipients": 2231,
+  "dedication": 0.998,
+  "rule": "v2: funded_share>=0.5 AND exclusive>=0.9 AND dedication (funded payers / all wallets the funder paid) >=0.9; window 14d before 20 Nov to 28 Nov"
+ }
+}
