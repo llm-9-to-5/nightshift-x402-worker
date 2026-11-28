@@ -8,7 +8,7 @@ const RPC = "https://base-rpc.publicnode.com";
 const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 const AU = "0x98de503528ee59b575ef0c0a2576a82497bfc029a5685b209e9ec333479b10a5";
 const TR = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
-const MAX_BLOCKS = 5400; // per run (18 min of Base blocks at 0.2s), so a 10-min cron catches up after outages. KV free tier = 1000 writes/day: each tick costs 2-3 writes. Subrequests: ~6 chunks x (1 + authorizers/80) + retries; free plan caps at 50.
+const MAX_BLOCKS = 3600; // per run (18 min of Base blocks at 0.2s), so a 10-min cron catches up after outages. KV free tier = 1000 writes/day: each tick costs 2-3 writes. Subrequests: ~6 chunks x (1 + authorizers/80) + retries; free plan caps at 50.
 
 const RPCS = ["https://gateway.tenderly.co/public/base", "https://base.gateway.tenderly.co", RPC];
 // Timestamps: read the real timestamps of the first and last block of each range and interpolate.
@@ -32,7 +32,11 @@ const emptyDay = (day) => ({ day, n: 0, usd: 0, n_big: 0, usd_big: 0, blocks: [n
 export async function pulseTick(env) {
   const tip = parseInt(await rpc("eth_blockNumber", []), 16) - 5;
   const last = parseInt((await env.STATS.get("pulse:last")) || "0", 10);
-  const from = last ? last + 1 : tip - 300;
+  let from = last ? last + 1 : tip - 300;
+  // Night 12: if the live tick falls more than ~1 hour behind (RPC rate limits on shared Cloudflare IPs), jump ahead.
+  // Finished UTC days are replaced by the full-day GitHub Action scan (importDays), so gaps here are temporary.
+  let jumped = 0;
+  if (tip - from > 18000) { jumped = tip - 3000 - from; from = tip - 3000; }
   if (from > tip - 300) return { skipped: true }; // wait for at least 300 new blocks (1 min): saves KV writes
   const to = Math.min(tip, from + MAX_BLOCKS - 1);
   const [fromTs, toTs] = await Promise.all([blockTs(from), blockTs(to)]);
@@ -83,10 +87,11 @@ export async function pulseTick(env) {
   }
   for (const D of Object.values(days)) {
     D.blocks = [D.blocks[0] ?? from, to];
+    if (jumped) D.live_gaps = (D.live_gaps || 0) + jumped;
     await env.STATS.put(`pulse:day:${D.day}`, JSON.stringify(D));
   }
   await env.STATS.put("pulse:last", String(to));
-  return { from, to, rows: rows.length };
+  return { from, to, rows: rows.length, jumped };
 }
 
 // Sampled facilitator shares (from D.fac: sender -> [n, usd, {recipients}]). Unlisted senders serving one recipient = self-settled.
@@ -150,4 +155,27 @@ export async function loadPulse(env, n = 3) {
   const list = await env.STATS.list({ prefix: "pulse:day:" });
   const keys = list.keys.map((k) => k.name).sort().slice(-n);
   return (await Promise.all(keys.map((k) => env.STATS.get(k, "json")))).filter(Boolean);
+}
+
+// Night 12: full UTC days are scanned by a GitHub Action in the public data repo (tools/dayscan.mjs) and committed as
+// pulse/<day>.json.gz. Import them (oldest first) over the live partial day: pulse:day:<day> + pulse:hist:<day>.
+const RAW = "https://raw.githubusercontent.com/llm-9-to-5/x402-onchain-data/main/pulse/";
+export async function importDays(env, census, nDays = 7, force = false) {
+  const out = [];
+  for (let i = nDays; i >= 1; i--) {
+    const day = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10);
+    const H = await env.STATS.get("pulse:hist:" + day, "json");
+    if (H && H.source === "dayscan" && !force) continue;
+    const r = await fetch(RAW + day + ".json.gz", { cf: { cacheTtl: 60 } });
+    if (!r.ok) { out.push(day + ": " + r.status); continue; }
+    const D = await new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).json();
+    if (D.day !== day || D.v !== 2) { out.push(day + ": bad file"); continue; }
+    const prevDay = new Date(Date.parse(day) - 864e5).toISOString().slice(0, 10);
+    const P = await env.STATS.get("pulse:day:" + prevDay, "json");
+    await env.STATS.put("pulse:day:" + day, JSON.stringify(D));
+    await env.STATS.put("pulse:hist:" + day, JSON.stringify({ day, source: "dayscan", summary: summarize(D, census), payees: D.payees, real: realIndex(D, P) }));
+    out.push(day + ": imported " + D.n);
+    break; // one day per invocation (CPU limit); call again for more
+  }
+  return out;
 }

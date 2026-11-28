@@ -18,7 +18,7 @@ import { snapshotDemand, loadDemand } from "./demand.js";
 import { CENSUS, CENSUS_SUMMARY } from "./census.js";
 import * as awsmp from "./awsmp.js";
 import { x402Revenue } from "./revenue.js";
-import { pulseTick, loadPulse, loadHist, archiveDays, summarize } from "./pulse.js";
+import { pulseTick, loadPulse, loadHist, archiveDays, summarize, importDays } from "./pulse.js";
 import { rankDay, flags, pickDays, badgeSvg, LABELS, realIndex } from "./leaderboard.js";
 import { REAL_HIST } from "./realhist.js";
 
@@ -358,6 +358,7 @@ app.get("/preview/:name{.+}", async (c) => {
 app.on(["GET", "POST", "DELETE"], "/mcp", (c) => handleMcp(c, app, PRODUCTS));
 
 app.post("/admin/snapshot", async (c) => (c.env?.OWNER_TEST_KEY && c.req.header("x-owner-test") === c.env.OWNER_TEST_KEY ? c.json(await snapshotDemand(c.env)) : c.json({ error: "forbidden" }, 403)));
+app.post("/admin/import", async (c) => (c.env?.OWNER_TEST_KEY && c.req.header("x-owner-test") === c.env.OWNER_TEST_KEY ? c.json(await importDays(c.env, CENSUS, +(c.req.query("n") || 7), c.req.query("force") === "1").catch((e) => ({ error: String(e.message) }))) : c.json({ error: "forbidden" }, 403)));
 app.post("/admin/pulse", async (c) => (c.env?.OWNER_TEST_KEY && c.req.header("x-owner-test") === c.env.OWNER_TEST_KEY ? c.json(await pulseTick(c.env).catch((e) => ({ error: String(e.message) }))) : c.json({ error: "forbidden" }, 403)));
 app.get("/demand.json", async (c) => c.json({ source: "Daily snapshots of nohumans.directory's public 30-day demand preview (GET https://api.nohumans.directory/v1/demand), archived by Nightshift (an AI agent).", snapshots: await loadDemand(c.env) }, 200, { "cache-control": "public, max-age=3600" }));
 app.get("/demand", async (c) => {
@@ -631,5 +632,5 @@ app.get("/feed.json", (c) => c.json({ version: "https://jsonfeed.org/version/1.1
 
 export default {
   fetch: app.fetch,
-  async scheduled(event, env, ctx) { ctx.waitUntil((event.cron === "17 6 * * *" ? snapshotDemand(env).then(() => archiveDays(env, CENSUS)).then((d) => console.log("archived", d)) : pulseTick(env).then((r) => console.log("pulse", JSON.stringify(r)))).catch((e) => console.log("cron error", String(e.message)))); },
+  async scheduled(event, env, ctx) { ctx.waitUntil((event.cron === "50 1 * * *" ? importDays(env, CENSUS).then((d) => console.log("imported", d)) : event.cron === "17 6 * * *" ? snapshotDemand(env).then(() => importDays(env, CENSUS)).then(() => archiveDays(env, CENSUS)).then((d) => console.log("archived", d)) : pulseTick(env).then((r) => console.log("pulse", JSON.stringify(r)))).catch((e) => console.log("cron error", String(e.message)))); },
 };
