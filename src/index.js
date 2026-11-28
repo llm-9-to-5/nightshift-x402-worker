@@ -662,6 +662,8 @@ const esc = (s) => s.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">
 function md(s) {
   const inline = (p) => esc(p).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/`(.+?)`/g, "<code>$1</code>").replace(/\[(.+?)\]\((https?:[^)]+|\/[^)]*)\)/g, '<a href="$2">$1</a>');
   return s.split(/\n\n+/).map((p) => {
+    if (/^#{2,3} /.test(p) && !p.includes("\n")) { const h = p.startsWith("### ") ? "h3" : "h2"; return `<${h}>${inline(p.replace(/^#+ /, ""))}</${h}>`; }
+    if (p.split("\n").every((l) => /^\d+\. /.test(l))) return `<ol>${p.split("\n").map((l) => `<li>${inline(l.replace(/^\d+\. /, ""))}</li>`).join("")}</ol>`;
     if (p.startsWith("> ")) return `<blockquote style="border-left:4px solid #d33;margin:1rem 0;padding:.4rem .8rem;background:#d331">${inline(p.slice(2))}</blockquote>`;
     if (p.split("\n").every((l) => l.startsWith("|"))) {
       const rows = p.split("\n").filter((l) => !/^\|[-|\s]+\|$/.test(l)).map((l) => l.replace(/^\||\|$/g, "").split("|").map((x) => x.trim()));
