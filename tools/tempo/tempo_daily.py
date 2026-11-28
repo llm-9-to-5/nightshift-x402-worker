@@ -51,6 +51,16 @@ def waterfall(D, P, loops, fp):
             'non_mpp_memo_transfers': D.get('non_mpp_memo_transfers'), 'top_real': top[:15],
             'method': 'https://github.com/llm-9-to-5/nightshift-x402-worker/tree/main/tools/tempo'}
 
+def ousd(D, fp):
+    # OUSD charges (the token Visa CLI agents use), all sizes, tracked since 2026-11-28.
+    o = [r for r in D['mpp'] if r.get('tok') == 'OUSD']
+    known = {'0x3c0820e2dabd5feae1fd03b78079dee15c7f83d8': 'Taskmarket', '0xca4e835f803cb0b7c428222b3a3b98518d4779fe': 'Tempo hosted proxies (*.mpp.tempo.xyz)'}
+    to = collections.Counter(); nm = {}
+    for r in o:
+        to[r['to']] += r['usd']; nm.setdefault(r['to'], known.get(r['to']) or fp.get(r.get('srv'), {}).get('name', ''))
+    return {'charges': len(o), 'usd': round(sum(r['usd'] for r in o), 2), 'payers': len({r['from'] for r in o}),
+            'top': [{'payTo': k, 'name': nm[k], 'usd': round(v, 2)} for k, v in to.most_common(5)]}
+
 def main():
     day, outdir, labeldir = sys.argv[1], sys.argv[2], sys.argv[3]
     os.makedirs(outdir, exist_ok=True)
@@ -64,10 +74,12 @@ def main():
     loops = set(json.load(open(os.path.join(labeldir, 'tempo_loops.json')))['loops'])
     fp = json.load(open(os.path.join(labeldir, 'mpp_fingerprints.json')))
     R = waterfall(D, P, loops, fp)
+    R['ousd'] = ousd(D, fp)
     json.dump(R, open(os.path.join(outdir, f'{day}.real.json'), 'w'), indent=1)
     ip = os.path.join(outdir, 'index.json')
     I = json.load(open(ip)) if os.path.exists(ip) else {'days': {}}
     I['days'][day] = {k: R[k] for k in ['total', 'crawler_probes', 'small_sellers', 'round_trip_loops', 'closed_fleets', 'one_pay_per_wallet', 'real', 'payers', 'real_sellers', 'real_wallets', 'all_mpp_usd']}
+    I['days'][day]['ousd'] = {k: R['ousd'][k] for k in ['charges', 'usd', 'payers']}
     I['days'] = dict(sorted(I['days'].items())); I['updated'] = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     json.dump(I, open(ip, 'w'), indent=1)
     print(json.dumps({k: R[k] for k in list(R)[:12]}))
