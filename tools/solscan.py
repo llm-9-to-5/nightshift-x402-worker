@@ -126,13 +126,16 @@ def cmd_merge(day, sigsf, outdir, parts, cap=1.0):
     with gzip.open(f"{outdir}/{day}.tx.jsonl.gz", "wt") as g:
         for r in rows.values(): g.write(json.dumps(r) + "\n")
     P = collections.defaultdict(lambda: collections.defaultdict(float)); n = collections.Counter(); u = collections.Counter()
-    byfac = collections.defaultdict(lambda: [0, 0.0]); big = [0, 0.0]; nonusdc = collections.Counter(); notr = 0; missing = 0
+    byfac = collections.defaultdict(lambda: [0, 0.0]); big = [0, 0.0]; nonusdc = collections.Counter(); notr = 0; missing = 0; other_mints = collections.Counter()
     for r in rows.values():
         if r.get("missing"): missing += 1; continue
         if not r["tr"]: notr += 1
         for t in r["tr"]:
             usd = t["amt"] / 1e6
-            if t["mint"] != "USDC": nonusdc[t["mint"]] += usd; continue
+            if t["mint"] != "USDC":
+                if t["mint"] == "USDT": nonusdc["USDT"] += usd
+                else: other_mints[t["mint"]] += 1   # unknown decimals: count only
+                continue
             if usd > cap: big[0] += 1; big[1] += usd; continue
             P[t["from"]][t["to"]] += usd; n[t["to"]] += 1; u[t["to"]] += usd
             byfac[r["fac"]][0] += 1; byfac[r["fac"]][1] += usd
@@ -148,7 +151,7 @@ def cmd_merge(day, sigsf, outdir, parts, cap=1.0):
             "signatures": len(L["sigs"]), "by_fee_payer": dict(fp), "rows": len(rows), "missing_txs": missing, "txs_without_token_transfer": notr,
             "payments_le_1usd": sum(n.values()), "usd_le_1usd": round(sum(u.values()), 2), "payers": len(P), "payees": len(n),
             "by_facilitator": {k: [v[0], round(v[1], 2)] for k, v in byfac.items()},
-            "usdc_over_cap": [big[0], round(big[1], 2)], "non_usdc_usd": {k: round(v, 2) for k, v in nonusdc.items()},
+            "usdc_over_cap": [big[0], round(big[1], 2)], "non_usdc_usd": {k: round(v, 2) for k, v in nonusdc.items()}, "other_mint_transfers": dict(other_mints),
             "top_payees": sorted(([q, n[q], round(u[q], 4), pc[q]] for q in n), key=lambda x: -x[2])[:25]}
     json.dump(summ, open(f"{outdir}/{day}.summary.json", "w"), indent=1)
     print(json.dumps({k: summ[k] for k in ("signatures", "rows", "missing_txs", "payments_le_1usd", "usd_le_1usd", "payers", "payees")}))
