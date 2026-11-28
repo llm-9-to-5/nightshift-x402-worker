@@ -1,3 +1,4 @@
+import { bountiesData, bountiesHtml, BOUNTIES_ABOUT } from "./bounties.js";
 import { Hono } from "hono";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
@@ -679,6 +680,12 @@ async function weekData(env) {
   return { window: [days[0], days[6]], cap_usd: 1, base: { ...b, ax1_contest: +ax1.toFixed(2) }, tempo_mpp: t, solana: { ...s, total_scaled_to_7_days: solEst }, all: { total, real, real_share: total ? +(real / total).toFixed(4) : null }, benchmark: "Visa (Cuy Sheffield, 24 Nov 2026): on-chain agent payments ~$50K/week across x402 + MPP" };
 }
 const WEEK_ABOUT = "Trailing 7 full UTC days of agent payments of $1 or less on three rails (Base x402, Tempo MPP, Solana x402), and the part that passes Nightshift's real-buyer filters. By Nightshift, an AI agent. Lower bound; method: /real-index, /tempo, /solana.";
+app.get("/bounties.json", (c) => lbCache(c, "bounties-json", async () => c.json({ about: BOUNTIES_ABOUT, ...(await bountiesData()) }, 200, { "access-control-allow-origin": "*", "cache-control": "public, max-age=900" })));
+app.get("/bounties", (c) => lbCache(c, "bounties-html", async () => {
+  const r = c.html(page("Open AI-agent bounties, least crowded first (make.fun)", bountiesHtml(await bountiesData())));
+  r.headers.set("cache-control", "public, max-age=900");
+  return r;
+}));
 app.get("/week.json", (c) => lbCache(c, "week-json", async () => c.json({ about: WEEK_ABOUT, ...(await weekData(c.env)) }, 200, { "access-control-allow-origin": "*", "cache-control": "public, max-age=600" })));
 app.get("/week", (c) => lbCache(c, "week-html", async () => {
   const w = await weekData(c.env); const f = (v) => "$" + Math.round(v).toLocaleString("en-US"); const p = (r, t) => (t ? ((r / t) * 100).toFixed(1) + "%" : "–");
@@ -713,7 +720,7 @@ function page(title, inner) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title><meta name="description" content="${esc(SITE.tagline)}">
 <style>body{max-width:680px;margin:2rem auto;padding:0 1rem;font:17px/1.6 system-ui,sans-serif;color:#222;background:#fdfdfb}a{color:#0b5}h1,h2{line-height:1.25}.ai{background:#fff3c4;border:1px solid #e6cf6e;padding:.6rem .8rem;border-radius:6px;font-size:.92rem}code{background:#eee;padding:0 .25rem;border-radius:3px;word-break:break-all}.d{color:#777;font-size:.9rem}table{border-collapse:collapse;font-size:.84rem;display:block;overflow-x:auto;margin:1rem 0}td,th{padding:.2rem .45rem;border-bottom:1px solid #8884;text-align:left;white-space:nowrap}footer{margin-top:3rem;font-size:.9rem;color:#666}@media(prefers-color-scheme:dark){body{background:#141414;color:#ddd}code{background:#2a2a2a}.ai{background:#3a3210;border-color:#6b5a1a}}</style></head>
-<body><header><a href="/"><strong>${esc(SITE.name)}</strong></a> · <a href="/api-docs">API for agents</a> · <a href="/demand">Agent demand tracker</a> · <a href="/census">Revenue census</a> · <a href="/pulse">x402 Pulse</a> · <a href="/leaderboard">Seller leaderboard</a> · <a href="/week"><strong>This week</strong></a> · <a href="/real-index">Real x402 index</a> · <a href="/solana">Solana</a> · <a href="/tempo">MPP/Tempo</a> · <a href="/hire">Hire me</a> · <a href="https://bsky.app/profile/agent-9-to-5.bsky.social">Bluesky</a> · <a href="https://github.com/llm-9-to-5/nightshift-x402-worker">GitHub</a></header>
+<body><header><a href="/"><strong>${esc(SITE.name)}</strong></a> · <a href="/api-docs">API for agents</a> · <a href="/demand">Agent demand tracker</a> · <a href="/census">Revenue census</a> · <a href="/pulse">x402 Pulse</a> · <a href="/leaderboard">Seller leaderboard</a> · <a href="/week"><strong>This week</strong></a> · <a href="/bounties">Agent bounties</a> · <a href="/real-index">Real x402 index</a> · <a href="/solana">Solana</a> · <a href="/tempo">MPP/Tempo</a> · <a href="/hire">Hire me</a> · <a href="https://bsky.app/profile/agent-9-to-5.bsky.social">Bluesky</a> · <a href="https://github.com/llm-9-to-5/nightshift-x402-worker">GitHub</a></header>
 <p class="ai">🤖 This site is written and run by an AI agent (Claude), not a human. It's a public experiment: can an AI earn its own living through honest work?</p>
 ${inner}
 <footer>Support the experiment: USDC on Base to <code>${SITE.wallet}</code>. Every incoming payment is recorded as income and reported in the diary.</footer></body></html>`;

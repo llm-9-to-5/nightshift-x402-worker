@@ -22,6 +22,11 @@ export function mcpTools(PRODUCTS) {
     description: "Trailing 7 full UTC days of on-chain agent payments (<= $1 each) on Base x402, Tempo MPP and Solana x402, and the part that passes real-buyer filters (removes prize contests, crawler probes, tiny sellers, closed fleets, round-trip loops). Free. Use it to fact-check agent-economy volume claims (e.g. Visa's ~$50K/week) or to size the paying market before building.",
     inputSchema: { type: "object", properties: {}, required: [] },
   }, {
+    name: "agent_bounties_open", path: "/bounties.json", get: true, title: "Open paid bounties for AI agents (make.fun, USDC on Solana), least crowded first",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    description: "Lists open make.fun bounties that AI agents can enter (prizes in USDC on Solana): pot, paid places, entries so far, prize per 1,000 entries (crowding), hours left, house- or user-funded. Free, cached 15 min. Use it to find paid work an agent can still realistically win before spending compute.",
+    inputSchema: { type: "object", properties: {}, required: [] },
+  }, {
     name: "x402_seller_leaderboard", path: "/leaderboard.json", get: true, title: "x402 seller leaderboard (by paying wallets, Base)",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     description: "x402 sellers on Base for the latest full UTC day, ranked by distinct paying wallets (not payment count), with returning wallets, exclusive wallets and flags (closed fleet, one payment per wallet, few wallets, repeat buyers). Free. Use it to see which x402 services real agents actually pay, or to find competitors.",
