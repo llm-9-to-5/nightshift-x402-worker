@@ -160,10 +160,11 @@ export async function loadPulse(env, n = 3) {
 // Night 12: full UTC days are scanned by a GitHub Action in the public data repo (tools/dayscan.mjs) and committed as
 // pulse/<day>.json.gz. Import them (oldest first) over the live partial day: pulse:day:<day> + pulse:hist:<day>.
 const RAW = "https://raw.githubusercontent.com/llm-9-to-5/x402-onchain-data/main/pulse/";
-export async function importDays(env, census, nDays = 7, force = false) {
+export async function importDays(env, census, nDays = 7, force = false, only = null) {
   const out = [];
   for (let i = nDays; i >= 1; i--) {
     const day = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10);
+    if (only && day !== only) continue;
     const H = await env.STATS.get("pulse:hist:" + day, "json");
     if (H && H.source === "dayscan" && !force) continue;
     const r = await fetch(RAW + day + ".json.gz", { cf: { cacheTtl: 60 } });
@@ -173,7 +174,8 @@ export async function importDays(env, census, nDays = 7, force = false) {
     const prevDay = new Date(Date.parse(day) - 864e5).toISOString().slice(0, 10);
     const P = await env.STATS.get("pulse:day:" + prevDay, "json");
     await env.STATS.put("pulse:day:" + day, JSON.stringify(D));
-    await env.STATS.put("pulse:hist:" + day, JSON.stringify({ day, source: "dayscan", summary: summarize(D, census), payees: D.payees, real: realIndex(D, P) }));
+    const R = realIndex(D, P); if (R) R.source = "dayscan";
+    await env.STATS.put("pulse:hist:" + day, JSON.stringify({ day, source: "dayscan", summary: summarize(D, census), payees: D.payees, real: R }));
     out.push(day + ": imported " + D.n);
     break; // one day per invocation (CPU limit); call again for more
   }

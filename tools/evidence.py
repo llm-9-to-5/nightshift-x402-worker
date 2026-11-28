@@ -44,6 +44,7 @@ for D in days:
         S[to]["maxday"] = max(S[to]["maxday"], pc)
     if "pn" not in D: print("WARNING: no per-pair counts for", D["day"], "(payment counts per wallet assume 1)", file=sys.stderr)
 
+vd = lambda x: "below_bar" if x < 20 else "at_bar" if x == 20 else "above_bar"
 os.makedirs(out + "/sellers", exist_ok=True); rows = []
 for to, e in S.items():
     W = len(e["wallets"])
@@ -58,8 +59,8 @@ for to, e in S.items():
                         "returning_wallet_share_by_payments": round(rp / pay, 6), "returning_wallet_share_by_wallets": round(len(ret) / W, 6),
                         "crawler_payer_share_by_payments": round(e["crawl_pay"] / pay, 6), "crawler_payer_share_by_payers": round(len(e["crawlers"]) / W, 6),
                         "threshold_verdicts": [
-                            {"threshold": "small_seller_20_wallet_bar_per_day", "window": "per_day", "aggregate": "max", "observed": e["maxday"], "verdict": "above_bar" if e["maxday"] >= 20 else "below_bar"},
-                            {"threshold": "small_seller_20_wallet_bar_series", "window": "whole_series", "observed": W, "verdict": "above_bar" if W >= 20 else "below_bar"}]}}
+                            {"threshold": "small_seller_20_wallet_bar_per_day", "window": "per_day", "aggregate": "max", "observed": e["maxday"], "verdict": vd(e["maxday"])},
+                            {"threshold": "small_seller_20_wallet_bar_series", "window": "whole_series", "observed": W, "verdict": vd(W)}]}}
     json.dump(rec, open(f"{out}/sellers/{to}.json", "w"), indent=1)
     rows.append({"payTo": to, "usd": round(e["usd"], 2), "payments": e["pay"], "wallets": W, "returning_wallets": len(ret),
                  "crawler_wallets": len(e["crawlers"]), "max_wallets_per_day": e["maxday"], "contest": to == AX1})
