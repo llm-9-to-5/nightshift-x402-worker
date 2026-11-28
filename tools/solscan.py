@@ -27,6 +27,14 @@ FAC = {
     "Daydreams": ["DuQ4jFMmVABWGxabYHFkGzdyeJgS1hp4wrRuCtsJgT9a"],
     "UltravioletaDAO": ["F742C4VfFLQ9zRQyithoj5229ZgtX2WqKCSFKgH2EThq"],
     "other": ["8B5UKhwfAyFW67h58cBkQj1Ur6QXRgwWJJcQp8ZBsDPa", "Hbe1vdFs4EQVVAzcV12muHhr6DEKwrT9roMXGPLxLBLP"],
+    # Added night 16 from x402scan's open-source list (packages/external/facilitators). All had 0 txs on 27-28 Nov;
+    # openx402 (~140/day) and 3ws (~360/day) stopped on 23 Nov ~18-19 UTC. Kept so a restart is counted.
+    "x402scan-listed": ["34DmdeSbEnng2bmbSj9ActckY49km2HdhiyAwyXZucqP", "8x8CzkTHTYkW18frrTR7HdCV6fsjenvcykJAXWvoPQW",
+                        "PcTZWki36z5Y82TAATKK48XUdfsgmS5oLkw2Ta7vWyK", "7NetKx8TuRMBpqYFKZCVetkNuvWCPTrgekmGrsJwTmfN",
+                        "HsozMJWWHNADoZRmhDGKzua6XW6NNfNDdQ4CkE9i5wHt", "AepWpq3GQwL8CeKMtZyKtKPa7W91Coygh3ropAJapVdU",
+                        "93syNmtT1tTd5ZtPwHqzGf6CM7fKhMmArpv4AM4FtyNX", "5xvht4fYDs99yprfm4UeuHSLxMBRpotfBtUCQqM3oDNG",
+                        "4x4ZhcqiT1FnirM8Ne97iVupkN4NcQgc2YYbE2jDZbZn", "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW",
+                        "561oabzy81vXYYbs1ZHR1bvpiEr6Nbfd6PGTxPshoz4p"],
 }
 MINTS = {"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v": "USDC", "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB": "USDT"}
 OFFICIAL = "https://api.mainnet-beta.solana.com"   # complete history; rate-limited
