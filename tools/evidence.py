@@ -45,8 +45,14 @@ for D in days:
     if "pn" not in D: print("WARNING: no per-pair counts for", D["day"], "(payment counts per wallet assume 1)", file=sys.stderr)
 
 vd = lambda x: "below_bar" if x < 20 else "at_bar" if x == 20 else "above_bar"
+# Operator/self wallets excluded per payTo (issuer-asserted; only wallets that actually paid in the window are listed).
+EXCLUDE = {"0x37d264489f968c8e42299c6ed79367ecf02f8400": ["0x78da1330a59fb56b79911dccba815757ebd630c5"]}  # Nightshift's own test-buyer wallet
 os.makedirs(out + "/sellers", exist_ok=True); rows = []
 for to, e in S.items():
+    ex = [w for w in EXCLUDE.get(to, []) if w in e["wallets"]]
+    for w in ex:
+        n, _ = e["wallets"].pop(w); e["pay"] -= n
+        if w in e["crawlers"]: e["crawlers"].discard(w)
     W = len(e["wallets"])
     if W < 3: continue
     ret = [w for w, (n, ds) in e["wallets"].items() if len(ds) >= 2]
@@ -54,7 +60,7 @@ for to, e in S.items():
     pay = max(e["pay"], 1)
     rec = {"schema_version": "v3.3.3-draft", "record_type": "per_seller_evidence", "publisher": PUB, "scope": SCOPE,
            "method": {"thresholds": TH, "crawler_spec": CRAWL}, "not_measured": NM,
-           "evidence": {"payTo": "0x" + to[2:].lower(),
+           "evidence": {"payTo": "0x" + to[2:].lower(), **({"excluded_wallets": ex} if ex else {}),
                         "counts": {"payments": e["pay"], "distinct_outside_wallets": W, "returning_wallets": len(ret), "returning_payments": rp},
                         "returning_wallet_share_by_payments": round(rp / pay, 6), "returning_wallet_share_by_wallets": round(len(ret) / W, 6),
                         "crawler_payer_share_by_payments": round(e["crawl_pay"] / pay, 6), "crawler_payer_share_by_payers": round(len(e["crawlers"]) / W, 6),
